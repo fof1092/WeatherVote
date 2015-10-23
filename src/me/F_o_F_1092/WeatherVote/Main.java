@@ -1,0 +1,391 @@
+package me.F_o_F_1092.WeatherVote;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class Main extends JavaPlugin {
+
+	HashMap<String, WeatherVote> votes = new HashMap<String, WeatherVote>();
+	HashMap<String, String> votingGUI = new HashMap<String, String>();
+	HashMap<String, String> msg = new HashMap<String, String>();
+	long votingTime;
+	long remindingTime;
+	long timeoutPeriod;
+	boolean useScoreboard;
+	boolean useVoteGUI;
+	boolean prematureEnd;
+	double price;
+	boolean rawMessages;
+	ArrayList<String> timeoutPeriodWorlds = new ArrayList<String>();
+	ArrayList<String> disabledWorlds = new ArrayList<String>();
+	boolean vault = false;
+	boolean updateAvailable = false;
+
+	public void onEnable() {
+		System.out.println("[WeatherVote] a Plugin by F_o_F_1092");
+
+		if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
+			vault = true;
+		}
+
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(new EventListener(this), this);
+
+		this.getCommand("WeatherVote").setExecutor(new CommnandWeatherVote(this));
+
+		File fileConfig = new File("plugins/WeatherVote/Config.yml");
+		FileConfiguration ymlFileConfig = YamlConfiguration.loadConfiguration(fileConfig);
+
+		if(!fileConfig.exists()) {
+			disabledWorlds.add("world_nether");
+			disabledWorlds.add("world_the_end");
+
+			try {
+				ymlFileConfig.save(fileConfig);
+				ymlFileConfig.set("Version", 1.0);
+				ymlFileConfig.set("VotingTime", 35);
+				ymlFileConfig.set("RemindingTime", 25);
+				ymlFileConfig.set("TimeoutPeriod", 15);
+				ymlFileConfig.set("UseScoreboard", true);
+				ymlFileConfig.set("UseVoteGUI", true);
+				ymlFileConfig.set("PrematureEnd", true);
+				ymlFileConfig.set("Price", 0.00);
+				ymlFileConfig.set("RawMessages", true);
+				ymlFileConfig.set("DisabledWorld", disabledWorlds);
+				ymlFileConfig.save(fileConfig);
+			} catch (IOException e1) {
+
+			}
+
+			disabledWorlds.clear();
+		} else {
+			double version = ymlFileConfig.getDouble("Version");
+			if (ymlFileConfig.getString("Version").equals("0.1")) {
+				try {
+					ymlFileConfig.set("Version", 1.0);
+					ymlFileConfig.set("UseScoreboard", true);
+					ymlFileConfig.set("UseVoteGUI", true);
+					ymlFileConfig.set("PrematureEnd", true);
+					ymlFileConfig.set("Price", 0.00);
+					ymlFileConfig.set("RawMessages", true);
+					ymlFileConfig.save(fileConfig);
+				} catch (IOException e1) {
+
+				}
+			} else if (version < 1.0) {
+				try {
+					ymlFileConfig.set("Version", 1.0);
+					if (version == 0.2) {
+						ymlFileConfig.set("PrematureEnd", true);
+					}
+					if (version <= 0.3) {
+						ymlFileConfig.set("Price", 0.00);
+						ymlFileConfig.set("RawMessages", true);
+					}
+					if (version <= 0.4) {
+						ymlFileConfig.set("UseVoteGUI", true);
+					}
+					ymlFileConfig.save(fileConfig);
+				} catch (IOException e1) {
+
+				}
+			}
+		}
+
+		votingTime = ymlFileConfig.getLong("VotingTime");
+		remindingTime = ymlFileConfig.getLong("RemindingTime");
+		timeoutPeriod = ymlFileConfig.getLong("TimeoutPeriod");
+		useScoreboard = ymlFileConfig.getBoolean("UseScoreboard");
+		useVoteGUI = ymlFileConfig.getBoolean("UseVoteGUI");
+		prematureEnd = ymlFileConfig.getBoolean("PrematureEnd");
+		price = ymlFileConfig.getDouble("Price");
+		rawMessages = ymlFileConfig.getBoolean("RawMessages");
+		disabledWorlds.addAll(ymlFileConfig.getStringList("DisabledWorld"));
+
+		File fileMessages = new File("plugins/WeatherVote/Messages.yml");
+		FileConfiguration ymlFileMessage = YamlConfiguration.loadConfiguration(fileMessages);
+
+		if(!fileMessages.exists()) {
+			try {
+				ymlFileMessage.save(fileMessages);
+				ymlFileMessage.set("Version", 1.0);
+				ymlFileMessage.set("[WeatherVote]", "&f[&9Weather&bVote&f] ");
+				ymlFileMessage.set("Color.1", "&9");
+				ymlFileMessage.set("Color.2", "&b");
+				ymlFileMessage.set("Message.1", "You have to be a player, to use this command.");
+				ymlFileMessage.set("Message.2", "You do not have the permission for this command.");
+				ymlFileMessage.set("Message.3", "There is a new voting for &b[WEATHER]&9 weather, vote with &b/wv yes&9 or &b/wv no&9.");
+				ymlFileMessage.set("Message.4", "The voting is disabled in this world.");
+				ymlFileMessage.set("Message.5", "There is already a voting in this world.");
+				ymlFileMessage.set("Message.6", "There isn't a voting in this world.");
+				ymlFileMessage.set("Message.7", "You have already voted.");
+				ymlFileMessage.set("Message.8", "You have voted for &bYES&9.");
+				ymlFileMessage.set("Message.9", "You have voted for &bNO&9.");
+				ymlFileMessage.set("Message.10", "The plugin is reloading...");
+				ymlFileMessage.set("Message.11", "Reloading completed.");
+				ymlFileMessage.set("Message.12", "The voting is over, the weather has been changed.");
+				ymlFileMessage.set("Message.13", "The voting is over, the weather hasn't been changed.");
+				ymlFileMessage.set("Message.14", "The voting for &b[WEATHER]&9 weather is over in &b[SECONDS]&9 seconds.");
+				ymlFileMessage.set("Message.15", "You have to wait a bit, until you can start a new voting.");
+				ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( http://fof1092.de/WV )&9");
+				ymlFileMessage.set("Message.17", "All players have voted.");
+				ymlFileMessage.set("Message.17", "All players have voted.");
+				ymlFileMessage.set("Message.18", "You need &b[MONEY]$&9 more to start a voting.");
+				ymlFileMessage.set("Message.19", "You payed &b[MONEY]$&9 to start a voting.");
+				ymlFileMessage.set("Message.20", "You opend the voting-inventory.");
+				ymlFileMessage.set("Message.21", "You'r voting-inventory has been closed.");
+				ymlFileMessage.set("Message.22", "Try [COMMAND]");
+				ymlFileMessage.set("Text.1", "SUNNY");
+				ymlFileMessage.set("Text.2", "RAINY");
+				ymlFileMessage.set("Text.3", "YES");
+				ymlFileMessage.set("Text.4", "NO");
+				ymlFileMessage.set("StatsText.1", "Stats since: ");
+				ymlFileMessage.set("StatsText.2", "Money spent: ");
+				ymlFileMessage.set("StatsText.3", "Total sunny votes: ");
+				ymlFileMessage.set("StatsText.8", "Total rainy votes: ");
+				ymlFileMessage.set("StatsText.4", "  Yes votes: ");
+				ymlFileMessage.set("StatsText.5", "  No votes: ");
+				ymlFileMessage.set("StatsText.6", "  Won: ");
+				ymlFileMessage.set("StatsText.7", "  Lost: ");
+				ymlFileMessage.set("HelpText.1", "This command shows you the help page.");
+				ymlFileMessage.set("HelpText.2", "This command shows you the info page.");
+				ymlFileMessage.set("HelpText.3", "This command shows you the stats page.");
+				ymlFileMessage.set("HelpText.4", "This command opens the Voting-Inventory.");
+				ymlFileMessage.set("HelpText.5", "This command allows you to start a sun voting.");
+				ymlFileMessage.set("HelpText.6", "This command allows you to start a rain voting.");
+				ymlFileMessage.set("HelpText.7", "This command allows you to vote for yes or no.");
+				ymlFileMessage.set("HelpText.8", "' '");
+				ymlFileMessage.set("HelpText.9", "This command is reloading the Config.yml and Messages.yml file.");
+				ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
+				ymlFileMessage.save(fileMessages);
+			} catch (IOException e1) {
+
+			}
+		} else {
+			double version = ymlFileMessage.getDouble("Version");
+			if (ymlFileConfig.getString("Version").equals("0.1")) {
+				try {
+					ymlFileMessage.set("[WeatherVote]", "&f[&9Weather&bVote&f] ");
+					ymlFileMessage.set("Color.1", "&9");
+					ymlFileMessage.set("Color.2", "&b");
+					ymlFileMessage.set("Message.3", "There is a new voting for &b[WEATHER]&9 weather, vote with &b/wv yes&9 or &b/wv no&9.");
+					ymlFileMessage.set("Message.8", "You have voted for &bYES&6.");
+					ymlFileMessage.set("Message.9", "You have voted for &bNO&6.");
+					ymlFileMessage.set("Message.14", "The voting for &b[WEATHER]&9 weather is over in &b[SECONDS]&9 seconds.");
+					ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( http://fof1092.de/WV )&9");
+					ymlFileMessage.set("Message.17", "All players have voted.");
+					ymlFileMessage.set("Message.18", "You need &b[MONEY]$&9 more to start a voting.");
+					ymlFileMessage.set("Message.19", "You payed &b[MONEY]$&9 to start a voting.");
+					ymlFileMessage.set("Message.20", "You opend the voting-inventory.");
+					ymlFileMessage.set("Message.21", "You'r voting-inventory has been closed.");
+					ymlFileMessage.set("Message.22", "Try [COMMAND]");
+					ymlFileMessage.set("Text.1", "SUNNY");
+					ymlFileMessage.set("Text.2", "RAINY");
+					ymlFileMessage.set("Text.3", "YES");
+					ymlFileMessage.set("Text.4", "NO");
+					ymlFileMessage.set("StatsText.1", "Stats since: ");
+					ymlFileMessage.set("StatsText.2", "Money spent: ");
+					ymlFileMessage.set("StatsText.3", "Total sunny votes: ");
+					ymlFileMessage.set("StatsText.8", "Total rainy votes: ");
+					ymlFileMessage.set("StatsText.4", "  Yes votes: ");
+					ymlFileMessage.set("StatsText.5", "  No votes: ");
+					ymlFileMessage.set("StatsText.6", "  Won: ");
+					ymlFileMessage.set("StatsText.7", "  Lost: ");
+					ymlFileMessage.set("HelpText.1", "This command shows you the help page.");
+					ymlFileMessage.set("HelpText.2", "This command shows you the info page.");
+					ymlFileMessage.set("HelpText.3", "This command shows you the stats page.");
+					ymlFileMessage.set("HelpText.4", "This command opens the Voting-Inventory.");
+					ymlFileMessage.set("HelpText.5", "This command allows you to start a sun voting.");
+					ymlFileMessage.set("HelpText.6", "This command allows you to start a rain voting.");
+					ymlFileMessage.set("HelpText.7", "This command allows you to vote for yes or no.");
+					ymlFileMessage.set("HelpText.8", "' '");
+					ymlFileMessage.set("HelpText.9", "This command is reloading the Config.yml and Messages.yml file.");
+					ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
+					ymlFileMessage.set("Version", 1.0);
+					ymlFileMessage.save(fileMessages);
+				} catch (IOException e1) {
+
+				}
+			} else if (version < 1.0) {
+				try {
+					ymlFileMessage.set("Version", 1.0);
+					if (version == 0.2) {
+						ymlFileMessage.set("Message.17", "All players have voted.");
+					}
+					if (version <= 0.3) {
+						ymlFileMessage.set("Message.18", "You need &b[MONEY]$&9 more to start a voting.");
+						ymlFileMessage.set("Message.19", "You payed &b[MONEY]$&9 to start a voting.");
+						ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
+					}
+					if (version <= 0.4) {
+						ymlFileMessage.set("Message.20", "You opend the voting-inventory.");
+						ymlFileMessage.set("Message.21", "You'r voting-inventory has been closed.");
+						ymlFileMessage.set("Message.22", "Try [COMMAND]");
+						ymlFileMessage.set("Text.1", "SUNNY");
+						ymlFileMessage.set("Text.2", "RAINY");
+						ymlFileMessage.set("Text.3", "YES");
+						ymlFileMessage.set("Text.4", "NO");
+						ymlFileMessage.set("StatsText.1", "Stats since: ");
+						ymlFileMessage.set("StatsText.2", "Money spent: ");
+						ymlFileMessage.set("StatsText.3", "Total sunny votes: ");
+						ymlFileMessage.set("StatsText.8", "Total rainy votes: ");
+						ymlFileMessage.set("StatsText.4", "  Yes votes: ");
+						ymlFileMessage.set("StatsText.5", "  No votes: ");
+						ymlFileMessage.set("StatsText.6", "  Won: ");
+						ymlFileMessage.set("StatsText.7", "  Lost: ");
+						ymlFileMessage.set("HelpText.1", "This command shows you the help page.");
+						ymlFileMessage.set("HelpText.2", "This command shows you the info page.");
+						ymlFileMessage.set("HelpText.3", "This command shows you the stats page.");
+						ymlFileMessage.set("HelpText.4", "This command opens the Voting-Inventory.");
+						ymlFileMessage.set("HelpText.5", "This command allows you to start a sun voting.");
+						ymlFileMessage.set("HelpText.6", "This command allows you to start a rain voting.");
+						ymlFileMessage.set("HelpText.7", "This command allows you to vote for yes or no.");
+						ymlFileMessage.set("HelpText.8", "' '");
+						ymlFileMessage.set("HelpText.9", "This command is reloading the Config.yml and Messages.yml file.");
+						ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( http://fof1092.de/WV )&9");
+					}
+					ymlFileMessage.save(fileMessages);
+				} catch (IOException e1) {
+
+				}
+			}
+		}
+
+		msg.put("[WeatherVote]",  ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("[WeatherVote]")));
+		msg.put("color.1",  ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("Color.1")));
+		msg.put("color.2",  ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("Color.2")));
+		msg.put("msg.1",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.1")));
+		msg.put("msg.2",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.2")));
+		msg.put("msg.3",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.3")));
+		msg.put("msg.4",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.4")));
+		msg.put("msg.5",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.5")));
+		msg.put("msg.6",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.6")));
+		msg.put("msg.7",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.7")));
+		msg.put("msg.8",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.8")));
+		msg.put("msg.9",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.9")));
+		msg.put("msg.10",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.10")));
+		msg.put("msg.11",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.11")));
+		msg.put("msg.12",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.12")));
+		msg.put("msg.13",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.13")));
+		msg.put("msg.14",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.14")));
+		msg.put("msg.15",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.15")));
+		msg.put("msg.16",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.16")));
+		msg.put("msg.17",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.17")));
+		msg.put("msg.18",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.18")));
+		msg.put("msg.19",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.19")));
+		msg.put("msg.20",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.20")));
+		msg.put("msg.21",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.21")));
+		msg.put("msg.22",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.22")));
+		msg.put("text.1",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.1")));
+		msg.put("text.2",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.2")));
+		msg.put("text.3",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.3")));
+		msg.put("text.4",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.4")));
+		msg.put("statsText.1",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.1")));
+		msg.put("statsText.2",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.2")));
+		msg.put("statsText.3",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.3")));
+		msg.put("statsText.4",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.4")));
+		msg.put("statsText.5",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.5")));
+		msg.put("statsText.6",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.6")));
+		msg.put("statsText.7",  ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.7")));
+		msg.put("helpText.1",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.1")));
+		msg.put("helpText.2",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.2")));
+		msg.put("helpText.3",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.3")));
+		msg.put("helpText.4",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.4")));
+		msg.put("helpText.5",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.5")));
+		msg.put("helpText.6",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.6")));
+		msg.put("helpText.7",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.7")));
+		msg.put("helpText.8",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.8")));
+		msg.put("helpText.9",  ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.9")));
+		msg.put("rmsg.1", ymlFileMessage.getString("RawMessage.1"));
+
+		File fileStats = new File("plugins/WeatherVote/Stats.yml");
+		FileConfiguration ymlFileStats = YamlConfiguration.loadConfiguration(fileStats);
+
+		if(!fileStats.exists()){
+			try {
+				ymlFileStats.save(fileStats);
+				ymlFileStats.set("Version", 1.0);
+				ymlFileStats.set("Date", new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+				ymlFileStats.set("Sunny.Yes", 0);
+				ymlFileStats.set("Sunny.No", 0);
+				ymlFileStats.set("Sunny.Won", 0);
+				ymlFileStats.set("Sunny.Lost", 0);
+				ymlFileStats.set("Rainy.Yes", 0);
+				ymlFileStats.set("Rainy.No", 0);
+				ymlFileStats.set("Rainy.Won", 0);
+				ymlFileStats.set("Rainy.Lost", 0);
+				ymlFileStats.set("MoneySpent", 0.00);
+				ymlFileStats.save(fileStats);
+			} catch (IOException e1) {
+
+			}
+		} else {
+			double version = ymlFileMessage.getDouble("Version");
+			if (version <= 0.3) {
+				try {
+					ymlFileMessage.set("Version", 1.0);
+					ymlFileStats.set("MoneySpent", 0.00);
+					ymlFileMessage.save(fileMessages);
+				} catch (IOException e1) {
+
+				}
+			}
+		}
+
+		try {
+
+			URL meineurl = new URL("http://fof1092.de/plugins/WeatherVote.txt");
+			URLConnection verbindung = meineurl.openConnection();
+			final BufferedReader in = new BufferedReader(new InputStreamReader( verbindung.getInputStream()));
+
+			if (!in.readLine().equals("Version: 1.0")) {
+				System.out.println("[WeatherVote] A new update is available.");
+				updateAvailable = true;
+			}
+
+		} catch ( IOException e) {
+			System.out.println("[WeatherVote] Couldn't check for updates.");
+		}
+	}
+
+	public void onDisable() {
+		System.out.println("[WeatherVote] a Plugin by F_o_F_1092");
+		for (World w : Bukkit.getWorlds()) {
+			if (useVoteGUI) {
+				if (!votingGUI.isEmpty()) {
+					WeatherVoteManager.closeAllVoteingGUIs(w.getName());
+				}
+			}
+
+			if (WeatherVoteManager.isVotingAtWorld(w.getName())) {
+				WeatherVote wv = WeatherVoteManager.getVotingAtWorld(w.getName());
+				if (!wv.timeoutPeriod) {
+					if (useScoreboard) {
+						for (Player p : wv.getAllPlayersAtWorld()) {
+							wv.removeScoreboard(p.getName());
+						}
+					}
+					wv.sendMessage(msg.get("[TimeVote]") + msg.get("msg.13"));
+				}
+			}
+		}
+	}
+
+}
