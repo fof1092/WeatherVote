@@ -31,7 +31,7 @@ public class EventListener implements Listener {
 
 		if (WeatherVoteManager.isVotingAtWorld(p.getWorld().getName())) {
 			WeatherVote wv = WeatherVoteManager.getVotingAtWorld(p.getWorld().getName());
-			if (!wv.timeoutPeriod) {
+			if (!wv.isTimeoutPeriod()) {
 				String text = plugin.msg.get("msg.3");
 				if (wv.getWeather().equals("Sunny")) {
 					text = text.replace("[WEATHER]", plugin.msg.get("text.1"));
@@ -64,9 +64,15 @@ public class EventListener implements Listener {
 
 		if (WeatherVoteManager.isVotingAtWorld(p.getWorld().getName())) {
 			WeatherVote wv = WeatherVoteManager.getVotingAtWorld(p.getWorld().getName());
-			if (!wv.timeoutPeriod) {
+			if (!wv.isTimeoutPeriod()) {
 				if (plugin.useScoreboard) {
-					WeatherVoteManager.getVotingAtWorld(p.getWorld().getName()).removeScoreboard(p.getName());
+					wv.removeScoreboard(p.getName());
+				}
+				
+				if (plugin.prematureEnd) {
+					if (wv.checkPrematureEnd()) {
+						wv.prematureEnd();
+					}
 				}
 			}
 		}
@@ -82,9 +88,15 @@ public class EventListener implements Listener {
 
 		if (WeatherVoteManager.isVotingAtWorld(p.getWorld().getName())) {
 			WeatherVote wv = WeatherVoteManager.getVotingAtWorld(p.getWorld().getName());
-			if (!wv.timeoutPeriod) {
+			if (!wv.isTimeoutPeriod()) {
 				if (plugin.useScoreboard) {
-					WeatherVoteManager.getVotingAtWorld(p.getWorld().getName()).removeScoreboard(p.getName());
+					wv.removeScoreboard(p.getName());
+				}
+			
+				if (plugin.prematureEnd) {
+					if (wv.checkPrematureEnd()) {
+						wv.prematureEnd();
+					}
 				}
 			}
 		}
@@ -100,8 +112,17 @@ public class EventListener implements Listener {
 
 		if (!e.getFrom().getName().equals(p.getWorld().getName())) {
 			if (WeatherVoteManager.isVotingAtWorld(e.getFrom().getName())) {
-				if (plugin.useScoreboard) {
-					WeatherVoteManager.getVotingAtWorld(e.getFrom().getName()).removeScoreboard(p.getName());
+				WeatherVote wv = WeatherVoteManager.getVotingAtWorld(e.getFrom().getName());
+				if (!wv.isTimeoutPeriod()) {
+					if (plugin.useScoreboard) {
+						wv.removeScoreboard(p.getName());
+					}
+				
+					if (plugin.prematureEnd) {
+						if (wv.checkPrematureEnd()) {
+							wv.prematureEnd();
+						}
+					}
 				}
 			}
 			if (WeatherVoteManager.isVotingAtWorld(p.getWorld().getName())) {

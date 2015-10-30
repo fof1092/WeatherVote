@@ -229,6 +229,17 @@ public class WeatherVote {
 		return true;
 	}
 
+	void prematureEnd() {
+		sendMessage(plugin.msg.get("[WeatherVote]") + plugin.msg.get("msg.17"));
+
+		cancelTimer(1);
+		cancelTimer(2);
+		cancelTimer(3);
+
+		startTimer(2, 0L);
+		startTimer(3, (plugin.timeoutPeriod + plugin.votingTime));
+	}
+	
 	void voteYes(String player) {
 		this.players.add(player);
 		this.yes++;
@@ -239,14 +250,7 @@ public class WeatherVote {
 
 		if (plugin.prematureEnd) {
 			if (checkPrematureEnd()) {
-				sendMessage(plugin.msg.get("[WeatherVote]") + plugin.msg.get("msg.17"));
-
-				cancelTimer(1);
-				cancelTimer(2);
-				cancelTimer(3);
-
-				startTimer(2, 0L);
-				startTimer(3, (plugin.timeoutPeriod + plugin.votingTime));
+				prematureEnd();
 			}
 		}
 	}
@@ -261,14 +265,7 @@ public class WeatherVote {
 
 		if (plugin.prematureEnd) {
 			if (checkPrematureEnd()) {
-				sendMessage(plugin.msg.get("[WeatherVote]") + plugin.msg.get("msg.17"));
-
-				cancelTimer(1);
-				cancelTimer(2);
-				cancelTimer(3);
-
-				startTimer(2, 0L);
-				startTimer(3, (plugin.timeoutPeriod + plugin.votingTime));
+				prematureEnd();
 			}
 		}
 	}

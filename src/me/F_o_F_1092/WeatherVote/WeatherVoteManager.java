@@ -41,9 +41,9 @@ public class WeatherVoteManager {
 
 		if (!isVotingAtWorld(worldName)) {
 			try {
-				voteGUI = Bukkit.createInventory(null, 9, plugin.msg.get("[WeatherVote]") + plugin.msg.get("text.1") + "/" + plugin.msg.get("text.2"));
+				voteGUI = Bukkit.createInventory(null, 9, plugin.msg.get("votingInventoryTitle.1"));
 			} catch (Exception e1) {
-				voteGUI = Bukkit.createInventory(null, 9, "§f[§9Weather§bVote§f]" + plugin.msg.get("color.2") + " Voting..");
+				voteGUI = Bukkit.createInventory(null, 9, "§f[§9W§bV§f]" + plugin.msg.get("color.2") + " Voting..");
 				System.out.println("\u001B[31m[WeatherVote] ERROR: 005 | The Voring-Inventory text caused a problem. [" + e1.getMessage() +"]\u001B[0m");
 			}
 
@@ -59,9 +59,11 @@ public class WeatherVoteManager {
 		} else {
 			WeatherVote wv = getVotingAtWorld(worldName);
 			try {
-				voteGUI = Bukkit.createInventory(null, 9, plugin.msg.get("[WeatherVote]") + plugin.msg.get("color.2") + wv.getWeather());
+				String replace = plugin.msg.get("votingInventoryTitle.2");
+				replace = replace.replace("[WEATHER]", wv.getWeather());
+				voteGUI = Bukkit.createInventory(null, 9, replace);
 			} catch (Exception e1) {
-				voteGUI = Bukkit.createInventory(null, 9, "§f[§9Weather§bVote§f] " + plugin.msg.get("color.2") + wv.getWeather());
+				voteGUI = Bukkit.createInventory(null, 9, "§f[§9W§bV§f] " + plugin.msg.get("color.2") + wv.getWeather());
 				System.out.println("\u001B[31m[WeatherVote] ERROR: 006 | The Voring-Inventory text caused a problem. [" + e1.getMessage() +"]\u001B[0m");
 			}
 
