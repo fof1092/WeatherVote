@@ -84,10 +84,10 @@ public class CommnandWeatherVote implements CommandExecutor {
 					replaceCommand = replaceCommand.replace("[COMMAND]", "/wv info");
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
-					cs.sendMessage("§9-----§f[§9Weather§bVote§f]§9-----");
-					cs.sendMessage("§9Version: §b1.0.1");
-					cs.sendMessage("§9By: §bF_o_F_1092");
-					cs.sendMessage("§9WeatherVote: §bhttp://fof1092.de/WV");
+					cs.sendMessage("Â§9-----Â§f[Â§9WeatherÂ§bVoteÂ§f]Â§9-----");
+					cs.sendMessage("Â§9Version: Â§b1.0.1");
+					cs.sendMessage("Â§9By: Â§bF_o_F_1092");
+					cs.sendMessage("Â§9WeatherVote: Â§bhttp://fof1092.de/WV");
 				}
 			} else if (args[0].equalsIgnoreCase("stats")) {
 				if (args.length != 1) {
@@ -161,12 +161,12 @@ public class CommnandWeatherVote implements CommandExecutor {
 									}	
 									if (plugin.rawMessages) {
 										String text2 = plugin.msg.get("rmsg.1");
-										text2 = text2.replace("[WEATHER]", wv.getWeather().toUpperCase());
+										text2 = text2.replace("[WEATHER]", plugin.msg.get("text.1"));
 										text2 = text2.replace("[\"\",", "[\"\",{\"text\":\"" + plugin.msg.get("[WeatherVote]") + "\"},");
 										wv.sendRawMessage(text2);
 									} else {
 										String text2 = plugin.msg.get("msg.3");
-										text2 = text2.replace("[WEATHER]", wv.getWeather().toUpperCase());
+										text2 = text2.replace("[WEATHER]", plugin.msg.get("text.1"));
 										wv.sendMessage(plugin.msg.get("[WeatherVote]") + text2);
 									}
 
@@ -226,12 +226,12 @@ public class CommnandWeatherVote implements CommandExecutor {
 									}
 									if (plugin.rawMessages) {
 										String text2 = plugin.msg.get("rmsg.1");
-										text2 = text2.replace("[WEATHER]", wv.getWeather().toUpperCase());
+										text2 = text2.replace("[WEATHER]", plugin.msg.get("text.2"));
 										text2 = text2.replace("[\"\",", "[\"\",{\"text\":\"" + plugin.msg.get("[WeatherVote]") + "\"},");
 										wv.sendRawMessage(text2);
 									} else {
 										String text2 = plugin.msg.get("msg.3");
-										text2 = text2.replace("[WEATHER]", wv.getWeather().toUpperCase());
+										text2 = text2.replace("[WEATHER]", plugin.msg.get("text.2"));
 										wv.sendMessage(plugin.msg.get("[WeatherVote]") + text2);
 									}
 
