@@ -24,6 +24,7 @@ public class WeatherVote {
 	Integer task3;
 	boolean timeoutPeriod;
 	double moneySpend;
+	boolean onePlayerVoteing = false;
 
 	WeatherVote(String worldName, String player, String time, double moneySpend) {
 		if (plugin.useVoteGUI) {
@@ -39,16 +40,26 @@ public class WeatherVote {
 		this.weather = time;
 		timeoutPeriod = false;
 		this.moneySpend = moneySpend;
-
-		if (plugin.useScoreboard) {  
-			for (Player p : getAllPlayersAtWorld()) {
-				setScoreboard(p.getName());
+		
+		if (getAllPlayersAtWorld().size() == 1) {
+			this.onePlayerVoteing = true;
+			
+			this.voteYes(player);
+			
+			startTimer(2, 0);
+		} else {
+			if (plugin.useScoreboard) {  
+				for (Player p : getAllPlayersAtWorld()) {
+					setScoreboard(p.getName());
+				}
+				updateScore();
 			}
-			updateScore();
-		}
+			
+			this.voteYes(player);
 
-		startTimer(1, plugin.remindingTime);
-		startTimer(2, plugin.votingTime);
+			startTimer(1, plugin.remindingTime);
+			startTimer(2, plugin.votingTime);
+		}
 		startTimer(3, (plugin.timeoutPeriod + plugin.votingTime));
 	}
 
@@ -61,14 +72,14 @@ public class WeatherVote {
 			try {
 				objective.setDisplayName(plugin.msg.get("[WeatherVote]") + plugin.msg.get("text.1"));
 			} catch (Exception e1) {
-				objective.setDisplayName("§f[§9Weather§bVote§f] SUNNY");
+				objective.setDisplayName("Â§f[Â§9WeatherÂ§bVoteÂ§f] SUNNY");
 				System.out.println("\u001B[31m[WeatherVote] ERROR: 001 | The scoreboard name caused a problem. (Message: text.1) [" + e1.getMessage() +"]\u001B[0m");
 			}
 		} else {
 			try {
 				objective.setDisplayName(plugin.msg.get("[WeatherVote]") + plugin.msg.get("text.2"));
 			} catch (Exception e1) {
-				objective.setDisplayName("§f[§9Weather§bVote§f] RAINY");
+				objective.setDisplayName("Â§f[Â§9WeatherÂ§bVoteÂ§f] RAINY");
 				System.out.println("\u001B[31m[WeatherVote] ERROR: 002 | The scoreboard name caused a problem. (Message: text.2) [" + e1.getMessage() +"]\u001B[0m");
 			}
 		}
@@ -158,7 +169,10 @@ public class WeatherVote {
 					WeatherVoteStats wvs = new WeatherVoteStats();
 
 					if (yes > no) {
-						sendMessage(plugin.msg.get("[WeatherVote]") + plugin.msg.get("msg.12"));
+						if (!onePlayerVoteing) {
+							sendMessage(plugin.msg.get("[WeatherVote]") + plugin.msg.get("msg.12"));
+						}
+						
 						if (weather.equals("Sunny")) {
 							Bukkit.getWorld(worldName).setStorm(false);
 							wvs.setSunnyStats(getYesVotes(), getNoVotes(), true, moneySpend);
@@ -176,9 +190,11 @@ public class WeatherVote {
 						}
 					}
 
-					if (plugin.useScoreboard) {
-						for (Player p : getAllPlayersAtWorld()) {
-							removeScoreboard(p.getName());
+					if (!onePlayerVoteing) {
+						if (plugin.useScoreboard) {
+							for (Player p : getAllPlayersAtWorld()) {
+								removeScoreboard(p.getName());
+							}
 						}
 					}
 
@@ -244,13 +260,15 @@ public class WeatherVote {
 		this.players.add(player);
 		this.yes++;
 
-		if (plugin.useScoreboard) {
-			updateScore();
-		}
+		if (!this.onePlayerVoteing) {
+			if (plugin.useScoreboard) {
+				updateScore();
+			}
 
-		if (plugin.prematureEnd) {
-			if (checkPrematureEnd()) {
-				prematureEnd();
+			if (plugin.prematureEnd) {
+				if (checkPrematureEnd()) {
+					prematureEnd();
+				}
 			}
 		}
 	}
@@ -259,13 +277,15 @@ public class WeatherVote {
 		this.players.add(player);
 		this.no++;
 
-		if (plugin.useScoreboard) {
-			updateScore();
-		}
+		if (!this.onePlayerVoteing) {
+			if (plugin.useScoreboard) {
+				updateScore();
+			}
 
-		if (plugin.prematureEnd) {
-			if (checkPrematureEnd()) {
-				prematureEnd();
+			if (plugin.prematureEnd) {
+				if (checkPrematureEnd()) {
+					prematureEnd();
+				}
 			}
 		}
 	}
