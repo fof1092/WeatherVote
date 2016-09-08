@@ -109,7 +109,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 					cs.sendMessage(plugin.msg.get("statsText.5") + plugin.msg.get("color.2") + wvs.getSunnyNo());
 					cs.sendMessage(plugin.msg.get("statsText.6") + plugin.msg.get("color.2") + wvs.getSunnyWon());
 					cs.sendMessage(plugin.msg.get("statsText.7") + plugin.msg.get("color.2") + wvs.getSunnyLost());
-					cs.sendMessage(plugin.msg.get("statsText.3") + plugin.msg.get("color.2") + wvs.getRainyVotes());
+					cs.sendMessage(plugin.msg.get("statsText.8") + plugin.msg.get("color.2") + wvs.getRainyVotes());
 					cs.sendMessage(plugin.msg.get("statsText.4") + plugin.msg.get("color.2") + wvs.getRainyYes());
 					cs.sendMessage(plugin.msg.get("statsText.5") + plugin.msg.get("color.2") + wvs.getRainyNo());
 					cs.sendMessage(plugin.msg.get("statsText.6") + plugin.msg.get("color.2") + wvs.getRainyWon());
