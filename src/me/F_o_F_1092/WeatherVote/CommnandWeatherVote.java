@@ -89,9 +89,9 @@ public class CommnandWeatherVote implements CommandExecutor {
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					cs.sendMessage("§9-----§f[§9Weather§bVote§f]§9-----");
-					cs.sendMessage("§9Version: §b1.0.3");
+					cs.sendMessage("§9Version: §b1.1");
 					cs.sendMessage("§9By: §bF_o_F_1092");
-					cs.sendMessage("§9WeatherVote: §bhttp://fof1092.de/WV");
+					cs.sendMessage("§9WeatherVote: §bhttps://fof1092.de/Plugins/WV");
 				}
 			} else if (args[0].equalsIgnoreCase("stats")) {
 				if (args.length != 1) {
@@ -355,6 +355,12 @@ public class CommnandWeatherVote implements CommandExecutor {
 											wv.removeScoreboard(p.getName());
 										}
 										
+										if (plugin.useBossBarAPI) {
+											for (Player p : wv.getAllPlayersAtWorld()) {
+												wv.removeBossBar(p.getName());
+											}
+										}
+										
 										wv.cancelTimer(1);
 										wv.cancelTimer(2);
 										wv.cancelTimer(3);
@@ -376,12 +382,14 @@ public class CommnandWeatherVote implements CommandExecutor {
 
 							try {
 								ymlFileConfig.save(fileConfig);
-								ymlFileConfig.set("Version", 1.03);
+								ymlFileConfig.set("Version", 1.1);
 								ymlFileConfig.set("VotingTime", 35);
 								ymlFileConfig.set("RemindingTime", 25);
 								ymlFileConfig.set("TimeoutPeriod", 15);
 								ymlFileConfig.set("UseScoreboard", true);
 								ymlFileConfig.set("UseVoteGUI", true);
+								ymlFileConfig.set("UseBossBarAPI", true);
+								ymlFileConfig.set("UseTitleAPI", true);
 								ymlFileConfig.set("PrematureEnd", true);
 								ymlFileConfig.set("Price", 0.00);
 								ymlFileConfig.set("RawMessages", true);
@@ -397,7 +405,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 							double version = ymlFileConfig.getDouble("Version");
 							if (ymlFileConfig.getString("Version").equals("0.1")) {
 								try {
-									ymlFileConfig.set("Version", 1.03);
+									ymlFileConfig.set("Version", 1.1);
 									ymlFileConfig.set("UseScoreboard", true);
 									ymlFileConfig.set("UseVoteGUI", true);
 									ymlFileConfig.set("PrematureEnd", true);
@@ -408,9 +416,8 @@ public class CommnandWeatherVote implements CommandExecutor {
 								} catch (IOException e1) {
 									System.out.println("\u001B[31m[WeatherVote] ERROR: 010 | Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
 								}
-							} else if (version < 1.03) {
+							} else if (version < 1.1) {
 								try {
-									ymlFileConfig.set("Version", 1.03);
 									if (version == 0.2) {
 										ymlFileConfig.set("PrematureEnd", true);
 									}
@@ -424,6 +431,11 @@ public class CommnandWeatherVote implements CommandExecutor {
 									if (version < 1.02) {
 										ymlFileConfig.set("VotingInventoryMessages", true);
 									}
+									if (version < 1.03) {
+										ymlFileConfig.set("UseBossBarAPI", true);
+										ymlFileConfig.set("UseTitleAPI", true);
+									}
+									ymlFileConfig.set("Version", 1.1);
 									ymlFileConfig.save(fileConfig);
 								} catch (IOException e1) {
 									System.out.println("\u001B[31m[WeatherVote] ERROR: 011 | Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
@@ -448,7 +460,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 						if(!fileMessages.exists()) {
 							try {
 								ymlFileMessage.save(fileMessages);
-								ymlFileMessage.set("Version", 1.03);
+								ymlFileMessage.set("Version", 1.1);
 								ymlFileMessage.set("[WeatherVote]", "&f[&9Weather&bVote&f] ");
 								ymlFileMessage.set("Color.1", "&9");
 								ymlFileMessage.set("Color.2", "&b");
@@ -467,7 +479,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 								ymlFileMessage.set("Message.13", "The voting is over, the weather hasn't been changed.");
 								ymlFileMessage.set("Message.14", "The voting for &b[WEATHER]&9 weather is over in &b[SECONDS]&9 seconds.");
 								ymlFileMessage.set("Message.15", "You have to wait a bit, until you can start a new voting.");
-								ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( http://fof1092.de/WV )&9");
+								ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( https://fof1092.de/Plugins/WV )&9");
 								ymlFileMessage.set("Message.17", "All players have voted.");
 								ymlFileMessage.set("Message.18", "You need &b[MONEY]$&9 more to start a voting.");
 								ymlFileMessage.set("Message.19", "You payed &b[MONEY]$&9 to start a voting.");
@@ -498,6 +510,12 @@ public class CommnandWeatherVote implements CommandExecutor {
 								ymlFileMessage.set("HelpText.9", "This command is reloading the Config.yml and Messages.yml file.");
 								ymlFileMessage.set("VotingInventoryTitle.1", "&f[&9W&bV&f] &bSunny&f/&bRainy");
 								ymlFileMessage.set("VotingInventoryTitle.2", "&f[&9W&bV&f] &b[WEATHER]&9");
+								ymlFileMessage.set("BossBarAPIMessage", "&f[&9W&bV&f] &9Voting for &b[WEATHER]&9 weather (&b/wv yes&9 or &b/wv no&9)");
+								ymlFileMessage.set("TitleAPIMessage.Title.1", "&f[&9W&bV&f] &b[WEATHER]&9 time voting.");
+								ymlFileMessage.set("TitleAPIMessage.Title.2", "&f[&9W&bV&f] &b[SECONDS]&9 seconds left.");
+								ymlFileMessage.set("TitleAPIMessage.Title.3", "&f[&9W&bV&f] &9The weather has been changed.");
+								ymlFileMessage.set("TitleAPIMessage.Title.4", "&f[&9W&bV&f] &9The weather hasn't been changed.");
+								ymlFileMessage.set("TitleAPIMessage.SubTitle", "&9(&b/wv yes&9 or &b/wv no&9)");
 								ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
 								ymlFileMessage.save(fileMessages);
 							} catch (IOException e1) {
@@ -514,7 +532,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 									ymlFileMessage.set("Message.8", "You have voted for &bYES&6.");
 									ymlFileMessage.set("Message.9", "You have voted for &bNO&6.");
 									ymlFileMessage.set("Message.14", "The voting for &b[WEATHER]&9 weather is over in &b[SECONDS]&9 seconds.");
-									ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( http://fof1092.de/WV )&9");
+									ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( https://fof1092.de/Plugins/WV )&9");
 									ymlFileMessage.set("Message.17", "All players have voted.");
 									ymlFileMessage.set("Message.18", "You need &b[MONEY]$&9 more to start a voting.");
 									ymlFileMessage.set("Message.19", "You payed &b[MONEY]$&9 to start a voting.");
@@ -545,15 +563,20 @@ public class CommnandWeatherVote implements CommandExecutor {
 									ymlFileMessage.set("HelpText.9", "This command is reloading the Config.yml and Messages.yml file.");
 									ymlFileMessage.set("VotingInventoryTitle.1", "&f[&9W&bV&f] &bSunny&f/&bRainy");
 									ymlFileMessage.set("VotingInventoryTitle.2", "&f[&9W&bV&f] &b[WEATHER]&9");
+									ymlFileMessage.set("BossBarAPIMessage", "&f[&9W&bV&f] &9Voting for &b[WEATHER]&9 weather (&b/wv yes&9 or &b/wv no&9)");
+									ymlFileMessage.set("TitleAPIMessage.Title.1", "&f[&9W&bV&f] &b[WEATHER]&9 time voting.");
+									ymlFileMessage.set("TitleAPIMessage.Title.2", "&f[&9W&bV&f] &b[SECONDS]&9 seconds left.");
+									ymlFileMessage.set("TitleAPIMessage.Title.3", "&f[&9W&bV&f] &9The weather has been changed.");
+									ymlFileMessage.set("TitleAPIMessage.Title.4", "&f[&9W&bV&f] &9The weather hasn't been changed.");
+									ymlFileMessage.set("TitleAPIMessage.SubTitle", "&9(&b/wv yes&9 or &b/wv no&9)");
 									ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
-									ymlFileMessage.set("Version", 1.03);
+									ymlFileMessage.set("Version", 1.1);
 									ymlFileMessage.save(fileMessages);
 								} catch (IOException e1) {
 									System.out.println("\u001B[31m[WeatherVote] ERROR: 013 | Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
 								}
-							} else if (version < 1.03) {
+							} else if (version < 1.1) {
 								try {
-									ymlFileMessage.set("Version", 1.03);
 									if (version == 0.2) {
 										ymlFileMessage.set("Message.17", "All players have voted.");
 									}
@@ -587,7 +610,6 @@ public class CommnandWeatherVote implements CommandExecutor {
 										ymlFileMessage.set("HelpText.7", "This command allows you to vote for yes or no.");
 										ymlFileMessage.set("HelpText.8", "' '");
 										ymlFileMessage.set("HelpText.9", "This command is reloading the Config.yml and Messages.yml file.");
-										ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( http://fof1092.de/WV )&9");
 									}
 									if (version <= 1.0) {
 										ymlFileMessage.set("VotingInventoryTitle.1", "&f[&9W&bV&f] &bSunny&f/&bRainy");
@@ -596,6 +618,16 @@ public class CommnandWeatherVote implements CommandExecutor {
 									if (version < 1.02) {
 										ymlFileMessage.set("Message.23", "You changed the weather to &b[WEATHER]&9.");
 									}
+									if (version < 1.1) {
+										ymlFileMessage.set("Message.16", "There is a new update available for this plugin. &b( https://fof1092.de/Plugins/WV )&9");
+										ymlFileMessage.set("BossBarAPIMessage", "&f[&9W&bV&f] &9Voting for &b[WEATHER]&9 weather (&b/wv yes&9 or &b/wv no&9)");
+										ymlFileMessage.set("TitleAPIMessage.Title.1", "&f[&9W&bV&f] &b[WEATHER]&9 time voting.");
+										ymlFileMessage.set("TitleAPIMessage.Title.2", "&f[&9W&bV&f] &b[SECONDS]&9 seconds left.");
+										ymlFileMessage.set("TitleAPIMessage.Title.3", "&f[&9W&bV&f] &9The weather has been changed.");
+										ymlFileMessage.set("TitleAPIMessage.Title.4", "&f[&9W&bV&f] &9The weather hasn't been changed.");
+										ymlFileMessage.set("TitleAPIMessage.SubTitle", "&9(&b/wv yes&9 or &b/wv no&9)");
+									}
+									ymlFileMessage.set("Version", 1.1);
 									ymlFileMessage.save(fileMessages);
 								} catch (IOException e1) {
 									System.out.println("\u001B[31m[WeatherVote] ERROR: 014 | Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
@@ -651,7 +683,13 @@ public class CommnandWeatherVote implements CommandExecutor {
 						plugin.msg.put("helpText.9", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.9")));
 						plugin.msg.put("votingInventoryTitle.1", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("VotingInventoryTitle.1")));
 						plugin.msg.put("votingInventoryTitle.2", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("VotingInventoryTitle.2")));
-						plugin.msg.put("rplugin.msg.1", ymlFileMessage.getString("RawMessage.1"));
+						plugin.msg.put("bossBarAPIMessage", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("BossBarAPIMessage")));
+						plugin.msg.put("titleAPIMessage.Title.1", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("TitleAPIMessage.Title.1")));
+						plugin.msg.put("titleAPIMessage.Title.2", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("TitleAPIMessage.Title.2")));
+						plugin.msg.put("titleAPIMessage.Title.3", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("TitleAPIMessage.Title.3")));
+						plugin.msg.put("titleAPIMessage.Title.4", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("TitleAPIMessage.Title.4")));
+						plugin.msg.put("titleAPIMessage.SubTitle", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("TitleAPIMessage.SubTitle")));
+						plugin.msg.put("rmsg.1", ymlFileMessage.getString("RawMessage.1"));
 
 						File fileStats = new File("plugins/WeatherVote/Stats.yml");
 						FileConfiguration ymlFileStats = YamlConfiguration.loadConfiguration(fileStats);
@@ -659,7 +697,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 						if(!fileStats.exists()){
 							try {
 								ymlFileStats.save(fileStats);
-								ymlFileStats.set("Version", 1.03);
+								ymlFileStats.set("Version", 1.1);
 								ymlFileStats.set("Date", new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 								ymlFileStats.set("Sunny.Yes", 0);
 								ymlFileStats.set("Sunny.No", 0);
@@ -676,12 +714,12 @@ public class CommnandWeatherVote implements CommandExecutor {
 							}
 						} else {
 							double version = ymlFileStats.getDouble("Version");
-							if (version < 1.03) {
+							if (version < 1.1) {
 								try {
-									ymlFileStats.set("Version", 1.03);
 									if (version < 0.4) {
 										ymlFileStats.set("MoneySpent", 0.00);
 									}
+									ymlFileStats.set("Version", 1.1);
 									ymlFileStats.save(fileStats);
 								} catch (IOException e1) {
 									System.out.println("\u001B[31m[WeatherVote] ERROR: 016 | Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");

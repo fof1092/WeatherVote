@@ -50,6 +50,10 @@ public class EventListener implements Listener {
 						}
 					}, 1L);
 				}
+				
+				if (plugin.useBossBarAPI) {
+					wv.setBossBar(p.getName());
+				}
 			}
 		}
 	}
@@ -67,6 +71,10 @@ public class EventListener implements Listener {
 			if (!wv.isTimeoutPeriod()) {
 				if (plugin.useScoreboard) {
 					wv.removeScoreboard(p.getName());
+				}
+				
+				if (plugin.useBossBarAPI) {
+					wv.removeBossBar(p.getName());
 				}
 				
 				if (plugin.prematureEnd) {
@@ -93,6 +101,10 @@ public class EventListener implements Listener {
 					wv.removeScoreboard(p.getName());
 				}
 			
+				if (plugin.useBossBarAPI) {
+					wv.removeBossBar(p.getName());
+				}
+				
 				if (plugin.prematureEnd) {
 					if (wv.checkPrematureEnd()) {
 						wv.prematureEnd();
@@ -118,6 +130,10 @@ public class EventListener implements Listener {
 						wv.removeScoreboard(p.getName());
 					}
 				
+					if (plugin.useBossBarAPI) {
+						wv.removeBossBar(p.getName());
+					}
+					
 					if (plugin.prematureEnd) {
 						if (wv.checkPrematureEnd()) {
 							wv.prematureEnd();
@@ -141,6 +157,10 @@ public class EventListener implements Listener {
 						WeatherVoteManager.getVotingAtWorld(p.getWorld().getName()).setScoreboard(p.getName());
 						WeatherVoteManager.getVotingAtWorld(p.getWorld().getName()).updateScore();
 					}
+					
+					if (plugin.useBossBarAPI) {
+						wv.setBossBar(p.getName());
+					}
 				}
 			}
 		}
@@ -162,15 +182,15 @@ public class EventListener implements Listener {
 			if (e.getRawSlot() == e.getSlot()) {
 				e.setCancelled(true);
 				if (!WeatherVoteManager.isVotingAtWorld(p.getWorld().getName())) {
-					if (e.getSlot() == 3) {
+					if (e.getSlot() >= 1 && e.getSlot() <= 3) {
 						p.chat("/wv sun");
-					} else if (e.getSlot() == 5) {
+					} else if (e.getSlot() >= 5 && e.getSlot() <= 7) {
 						p.chat("/wv rain");
 					}
 				} else {
-					if (e.getSlot() == 3) {
+					if (e.getSlot() >= 1 && e.getSlot() <= 3) {
 						p.chat("/wv yes");
-					} else if (e.getSlot() == 5) {
+					} else if (e.getSlot() >= 5 && e.getSlot() <= 7) {
 						p.chat("/wv no");
 					}
 					WeatherVoteManager.closeVoteingGUI(p.getName(), true);
