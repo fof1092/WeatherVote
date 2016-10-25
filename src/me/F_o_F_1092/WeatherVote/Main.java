@@ -30,11 +30,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.F_o_F_1092.WeatherVote.PluginManager.HelpMessage;
+import me.F_o_F_1092.WeatherVote.PluginManager.HelpPageListener;
+
 public class Main extends JavaPlugin {
 
 	HashMap<String, WeatherVote> votes = new HashMap<String, WeatherVote>();
 	HashMap<String, String> votingGUI = new HashMap<String, String>();
-	HashMap<String, String> msg = new HashMap<String, String>();
+	public HashMap<String, String> msg = new HashMap<String, String>();
 	long votingTime;
 	long remindingTime;
 	long timeoutPeriod;
@@ -80,7 +83,7 @@ public class Main extends JavaPlugin {
 
 			try {
 				ymlFileConfig.save(fileConfig);
-				ymlFileConfig.set("Version", 1.1);
+				ymlFileConfig.set("Version", 1.11);
 				ymlFileConfig.set("VotingTime", 35);
 				ymlFileConfig.set("RemindingTime", 25);
 				ymlFileConfig.set("TimeoutPeriod", 15);
@@ -103,7 +106,7 @@ public class Main extends JavaPlugin {
 			double version = ymlFileConfig.getDouble("Version");
 			if (ymlFileConfig.getString("Version").equals("0.1")) {
 				try {
-					ymlFileConfig.set("Version", 1.1);
+					ymlFileConfig.set("Version", 1.11);
 					ymlFileConfig.set("UseScoreboard", true);
 					ymlFileConfig.set("UseVoteGUI", true);
 					ymlFileConfig.set("PrematureEnd", true);
@@ -114,8 +117,9 @@ public class Main extends JavaPlugin {
 				} catch (IOException e1) {
 					System.out.println("\u001B[31m[WeatherVote] ERROR: 010 | Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
 				}
-			} else if (version < 1.1) {
+			} else if (version < 1.11) {
 				try {
+					ymlFileConfig.set("Version", 1.11);
 					if (version == 0.2) {
 						ymlFileConfig.set("PrematureEnd", true);
 					}
@@ -133,7 +137,6 @@ public class Main extends JavaPlugin {
 						ymlFileConfig.set("UseBossBarAPI", true);
 						ymlFileConfig.set("UseTitleAPI", true);
 					}
-					ymlFileConfig.set("Version", 1.1);
 					ymlFileConfig.save(fileConfig);
 				} catch (IOException e1) {
 					System.out.println("\u001B[31m[WeatherVote] ERROR: 011 | Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
@@ -171,7 +174,7 @@ public class Main extends JavaPlugin {
 		if(!fileMessages.exists()) {
 			try {
 				ymlFileMessage.save(fileMessages);
-				ymlFileMessage.set("Version", 1.1);
+				ymlFileMessage.set("Version", 1.11);
 				ymlFileMessage.set("[WeatherVote]", "&f[&9Weather&bVote&f] ");
 				ymlFileMessage.set("Color.1", "&9");
 				ymlFileMessage.set("Color.2", "&b");
@@ -210,6 +213,10 @@ public class Main extends JavaPlugin {
 				ymlFileMessage.set("StatsText.5", "  No votes: ");
 				ymlFileMessage.set("StatsText.6", "  Won: ");
 				ymlFileMessage.set("StatsText.7", "  Lost: ");
+			    ymlFileMessage.set("HelpTextGui.1", "&b[&9Click to use this command&b]");
+			    ymlFileMessage.set("HelpTextGui.2", "&b[&9Next page&b]");
+			    ymlFileMessage.set("HelpTextGui.3", "&b[&9Last page&b]");
+			    ymlFileMessage.set("HelpTextGui.4", "&7&oPage [PAGE]. &7Click on the arrows for the next page.");
 				ymlFileMessage.set("HelpText.1", "This command shows you the help page.");
 				ymlFileMessage.set("HelpText.2", "This command shows you the info page.");
 				ymlFileMessage.set("HelpText.3", "This command shows you the stats page.");
@@ -236,6 +243,7 @@ public class Main extends JavaPlugin {
 			double version = ymlFileMessage.getDouble("Version");
 			if (ymlFileConfig.getString("Version").equals("0.1")) {
 				try {
+					ymlFileMessage.set("Version", 1.11);
 					ymlFileMessage.set("[WeatherVote]", "&f[&9Weather&bVote&f] ");
 					ymlFileMessage.set("Color.1", "&9");
 					ymlFileMessage.set("Color.2", "&b");
@@ -263,6 +271,10 @@ public class Main extends JavaPlugin {
 					ymlFileMessage.set("StatsText.5", "  No votes: ");
 					ymlFileMessage.set("StatsText.6", "  Won: ");
 					ymlFileMessage.set("StatsText.7", "  Lost: ");
+				    ymlFileMessage.set("HelpTextGui.1", "&b[&9Click to use this command&b]");
+				    ymlFileMessage.set("HelpTextGui.2", "&b[&9Next page&b]");
+				    ymlFileMessage.set("HelpTextGui.3", "&b[&9Last page&b]");
+				    ymlFileMessage.set("HelpTextGui.4", "&7&oPage [PAGE]. &7Click on the arrows for the next page.");
 					ymlFileMessage.set("HelpText.1", "This command shows you the help page.");
 					ymlFileMessage.set("HelpText.2", "This command shows you the info page.");
 					ymlFileMessage.set("HelpText.3", "This command shows you the stats page.");
@@ -281,13 +293,13 @@ public class Main extends JavaPlugin {
 					ymlFileMessage.set("TitleAPIMessage.Title.4", "&f[&9W&bV&f] &9The weather hasn't been changed.");
 					ymlFileMessage.set("TitleAPIMessage.SubTitle", "&9(&b/wv yes&9 or &b/wv no&9)");
 					ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
-					ymlFileMessage.set("Version", 1.1);
 					ymlFileMessage.save(fileMessages);
 				} catch (IOException e1) {
 					System.out.println("\u001B[31m[WeatherVote] ERROR: 013 | Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
 				}
-			} else if (version < 1.1) {
+			} else if (version < 1.11) {
 				try {
+					ymlFileMessage.set("Version", 1.11);
 					if (version == 0.2) {
 						ymlFileMessage.set("Message.17", "All players have voted.");
 					}
@@ -338,7 +350,12 @@ public class Main extends JavaPlugin {
 						ymlFileMessage.set("TitleAPIMessage.Title.4", "&f[&9W&bV&f] &9The weather hasn't been changed.");
 						ymlFileMessage.set("TitleAPIMessage.SubTitle", "&9(&b/wv yes&9 or &b/wv no&9)");
 					}
-					ymlFileMessage.set("Version", 1.1);
+					if (version < 1.11) {
+					    ymlFileMessage.set("HelpTextGui.1", "&b[&9Click to use this command&b]");
+					    ymlFileMessage.set("HelpTextGui.2", "&b[&9Next page&b]");
+					    ymlFileMessage.set("HelpTextGui.3", "&b[&9Last page&b]");
+					    ymlFileMessage.set("HelpTextGui.4", "&7&oPage [PAGE]. &7Click on the arrows for the next page.");
+					}
 					ymlFileMessage.save(fileMessages);
 				} catch (IOException e1) {
 					System.out.println("\u001B[31m[WeatherVote] ERROR: 014 | Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
@@ -376,6 +393,10 @@ public class Main extends JavaPlugin {
 		msg.put("text.2", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.2")));
 		msg.put("text.3", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.3")));
 		msg.put("text.4", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.4")));
+		msg.put("helpTextGui.1", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpTextGui.1")));
+		msg.put("helpTextGui.2", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpTextGui.2")));
+		msg.put("helpTextGui.3", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpTextGui.3")));
+		msg.put("helpTextGui.4", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpTextGui.4")));
 		msg.put("statsText.1", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.1")));
 		msg.put("statsText.2", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.2")));
 		msg.put("statsText.3", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.3")));
@@ -402,13 +423,28 @@ public class Main extends JavaPlugin {
 		msg.put("titleAPIMessage.SubTitle", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("TitleAPIMessage.SubTitle")));
 		msg.put("rmsg.1", ymlFileMessage.getString("RawMessage.1"));
 
+		
+		HelpPageListener.setPluginNametag(msg.get("[WeatherVote]"));
+		
+		HelpPageListener.addHelpMessage(new HelpMessage(null, msg.get("helpText.1"), "/wv help (Page)"));
+		HelpPageListener.addHelpMessage(new HelpMessage(null, msg.get("helpText.2"), "/wv info"));
+		HelpPageListener.addHelpMessage(new HelpMessage(null, msg.get("helpText.3"), "/wv stats"));
+		if (useVoteGUI) {
+			HelpPageListener.addHelpMessage(new HelpMessage(null, msg.get("helpText.4"), "/wv"));
+		}
+		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Day", msg.get("helpText.5"), "/wv sun"));
+		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Night", msg.get("helpText.6"), "/wv rain"));
+		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Vote", msg.get("helpText.7"), "/wv yes"));
+		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Vote", msg.get("helpText.8"), "/wv no"));
+		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Reload", msg.get("helpText.9"), "/wv reload"));
+		
 		File fileStats = new File("plugins/WeatherVote/Stats.yml");
 		FileConfiguration ymlFileStats = YamlConfiguration.loadConfiguration(fileStats);
 
 		if(!fileStats.exists()){
 			try {
 				ymlFileStats.save(fileStats);
-				ymlFileStats.set("Version", 1.1);
+				ymlFileStats.set("Version", 1.11);
 				ymlFileStats.set("Date", new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 				ymlFileStats.set("Sunny.Yes", 0);
 				ymlFileStats.set("Sunny.No", 0);
@@ -425,12 +461,12 @@ public class Main extends JavaPlugin {
 			}
 		} else {
 			double version = ymlFileStats.getDouble("Version");
-			if (version < 1.1) {
+			if (version < 1.11) {
 				try {
+					ymlFileStats.set("Version", 1.11);
 					if (version < 0.4) {
 						ymlFileStats.set("MoneySpent", 0.00);
 					}
-					ymlFileStats.set("Version", 1.1);
 					ymlFileStats.save(fileStats);
 				} catch (IOException e1) {
 					System.out.println("\u001B[31m[WeatherVote] ERROR: 016 | Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
@@ -471,7 +507,7 @@ public class Main extends JavaPlugin {
 					URLConnection connection = url.openConnection();
 					final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream())); 
 					
-					if (!reader.readLine().equals("Version: 1.1")) {
+					if (!reader.readLine().equals("Version: 1.1.1")) {
 						System.out.println("[WeatherVote] A new update is available.");
 						updateAvailable = true;
 					}
