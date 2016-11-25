@@ -16,7 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.F_o_F_1092.WeatherVote.PluginManager.HelpMessage;
+import me.F_o_F_1092.WeatherVote.PluginManager.Command;
+import me.F_o_F_1092.WeatherVote.PluginManager.CommandListener;
 import me.F_o_F_1092.WeatherVote.PluginManager.HelpPageListener;
 import me.F_o_F_1092.WeatherVote.PluginManager.UpdateListener;
 
@@ -60,7 +61,8 @@ public class Main extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new EventListener(this), this);
 
-		this.getCommand("WeatherVote").setExecutor(new CommnandWeatherVote(this));
+		this.getCommand("WeatherVote").setExecutor(new CommandWeatherVote(this));
+		this.getCommand("WeatherVote").setTabCompleter(new CommandWeatherVoteTabCompleter());
 
 		File fileConfig = new File("plugins/WeatherVote/Config.yml");
 		FileConfiguration ymlFileConfig = YamlConfiguration.loadConfiguration(fileConfig);
@@ -400,15 +402,6 @@ public class Main extends JavaPlugin {
 		msg.put("statsText.5", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.5")));
 		msg.put("statsText.6", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.6")));
 		msg.put("statsText.7", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.7")));
-		msg.put("helpText.1", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.1")));
-		msg.put("helpText.2", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.2")));
-		msg.put("helpText.3", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.3")));
-		msg.put("helpText.4", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.4")));
-		msg.put("helpText.5", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.5")));
-		msg.put("helpText.6", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.6")));
-		msg.put("helpText.7", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.7")));
-		msg.put("helpText.8", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.8")));
-		msg.put("helpText.9", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("HelpText.9")));
 		msg.put("votingInventoryTitle.1", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("VotingInventoryTitle.1")));
 		msg.put("votingInventoryTitle.2", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("VotingInventoryTitle.2")));
 		msg.put("bossBarAPIMessage", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("BossBarAPIMessage")));
@@ -422,17 +415,18 @@ public class Main extends JavaPlugin {
 		
 		HelpPageListener.setPluginNametag(msg.get("[WeatherVote]"));
 		
-		HelpPageListener.addHelpMessage(new HelpMessage(null, msg.get("helpText.1"), "/wv help (Page)"));
-		HelpPageListener.addHelpMessage(new HelpMessage(null, msg.get("helpText.2"), "/wv info"));
-		HelpPageListener.addHelpMessage(new HelpMessage(null, msg.get("helpText.3"), "/wv stats"));
+		CommandListener.addCommand(new Command("/wv help (Page)", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.1"))));
+		CommandListener.addCommand(new Command("/wv info", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.2"))));
+		CommandListener.addCommand(new Command("/wv stats", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.3"))));
 		if (useVoteGUI) {
-			HelpPageListener.addHelpMessage(new HelpMessage(null, msg.get("helpText.4"), "/wv"));
+			CommandListener.addCommand(new Command("/wv", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.4"))));
 		}
-		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Day", msg.get("helpText.5"), "/wv sun"));
-		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Night", msg.get("helpText.6"), "/wv rain"));
-		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Vote", msg.get("helpText.7"), "/wv yes"));
-		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Vote", msg.get("helpText.8"), "/wv no"));
-		HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Reload", msg.get("helpText.9"), "/wv reload"));
+		CommandListener.addCommand(new Command("/wv sun", "WeatherVote.Sun", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.5"))));
+		CommandListener.addCommand(new Command("/wv rain", "WeatherVote.Rain", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.6"))));
+		CommandListener.addCommand(new Command("/wv yes", "WeatherVote.Vote", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.7"))));
+		CommandListener.addCommand(new Command("/wv no", "WeatherVote.Vote", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.8"))));
+		CommandListener.addCommand(new Command("/wv reload", "WeatherVote.Reload",ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.9"))));
+		
 		
 		File fileStats = new File("plugins/WeatherVote/Stats.yml");
 		FileConfiguration ymlFileStats = YamlConfiguration.loadConfiguration(fileStats);

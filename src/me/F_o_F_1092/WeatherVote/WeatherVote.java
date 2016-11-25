@@ -30,7 +30,7 @@ public class WeatherVote {
 	Integer task3;
 	boolean timeoutPeriod;
 	double moneySpend;
-	boolean onePlayerVoteing = false;
+	boolean onePlayerVoting = false;
 	BossBar bossBar;
 
 	WeatherVote(String worldName, String player, String time, double moneySpend) {
@@ -49,7 +49,7 @@ public class WeatherVote {
 		this.moneySpend = moneySpend;
 		
 		if (getAllPlayersAtWorld().size() == 1 || plugin.checkForHiddenPlayers && getAllPlayersAtWorld().size() - getNumberOfHiddenPlayers() <= 1) {
-			this.onePlayerVoteing = true;
+			this.onePlayerVoting = true;
 			
 			this.voteYes(player);
 			
@@ -224,7 +224,7 @@ public class WeatherVote {
 					WeatherVoteStats wvs = new WeatherVoteStats();
 
 					if (yes > no) {
-						if (!onePlayerVoteing) {
+						if (!onePlayerVoting) {
 							sendMessage(plugin.msg.get("[WeatherVote]") + plugin.msg.get("msg.12"));
 						}
 						
@@ -245,7 +245,7 @@ public class WeatherVote {
 						}
 					}
 
-					if (!onePlayerVoteing) {
+					if (!onePlayerVoting) {
 						if (plugin.useScoreboard) {
 							for (Player p : getAllPlayersAtWorld()) {
 								removeScoreboard(p.getName());
@@ -334,7 +334,7 @@ public class WeatherVote {
 		this.players.add(player);
 		this.yes++;
 
-		if (!this.onePlayerVoteing) {
+		if (!this.onePlayerVoting) {
 			if (plugin.useScoreboard) {
 				updateScore();
 			}
@@ -351,7 +351,7 @@ public class WeatherVote {
 		this.players.add(player);
 		this.no++;
 
-		if (!this.onePlayerVoteing) {
+		if (!this.onePlayerVoting) {
 			if (plugin.useScoreboard) {
 				updateScore();
 			}

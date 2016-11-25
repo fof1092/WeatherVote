@@ -12,7 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import me.F_o_F_1092.WeatherVote.PluginManager.HelpMessage;
+import me.F_o_F_1092.WeatherVote.PluginManager.CommandListener;
 import me.F_o_F_1092.WeatherVote.PluginManager.HelpPageListener;
 import me.F_o_F_1092.WeatherVote.PluginManager.UpdateListener;
 
@@ -20,11 +20,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 
-public class CommnandWeatherVote implements CommandExecutor {
+public class CommandWeatherVote implements CommandExecutor {
 
 	private Main plugin;
 
-	public CommnandWeatherVote(Main plugin) {
+	public CommandWeatherVote(Main plugin) {
 		this.plugin = plugin;
 	}
 
@@ -33,7 +33,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 		if (args.length == 0) {
 			if (!(cs instanceof Player) || !plugin.useVoteGUI) {
 				String replaceCommand = plugin.msg.get("msg.22");
-				replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv help (Page)"));
+				replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv help (Page)").getColoredCommand());
 				cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 			} else {
 				Player p = (Player)cs;
@@ -63,13 +63,13 @@ public class CommnandWeatherVote implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("help")) {
 				if (!(args.length >= 1 && args.length <= 2)) {
 					String replaceCommand = plugin.msg.get("msg.22");
-					replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv help (Page)"));
+					replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv help (Page)").getColoredCommand());
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					if (!(cs instanceof Player)) {
 						if (args.length != 1) {
 							String replaceCommand = plugin.msg.get("msg.22");
-							replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv help (Page)"));
+							replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv help (Page)").getColoredCommand());
 							cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 						} else {
 							HelpPageListener.sendNormalMessage(cs);
@@ -81,12 +81,12 @@ public class CommnandWeatherVote implements CommandExecutor {
 						} else {
 							if (!HelpPageListener.isNumber(args[1])) {
 								String replaceCommand = plugin.msg.get("msg.22");
-								replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv help (Page)"));
+								replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv help (Page)").getColoredCommand());
 								cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 							} else {
 								if (Integer.parseInt(args[1]) <= 0 || Integer.parseInt(args[1]) > HelpPageListener.getMaxPlayerPages(p)) {
 									String replaceCommand = plugin.msg.get("msg.22");
-									replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv help (Page)"));
+									replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv help (Page)").getColoredCommand());
 									cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 								} else {
 									HelpPageListener.sendMessage(p, Integer.parseInt(args[1]) - 1);
@@ -98,7 +98,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("info")) {
 				if (args.length != 1) {
 					String replaceCommand = plugin.msg.get("msg.22");
-					replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv info"));
+					replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv info").getColoredCommand());
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					cs.sendMessage("§9-----§f[§9Weather§bVote§f]§9-----");
@@ -109,7 +109,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("stats")) {
 				if (args.length != 1) {
 					String replaceCommand = plugin.msg.get("msg.22");
-					replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv stats"));
+					replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv stats").getColoredCommand());
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					WeatherVoteStats wvs = new WeatherVoteStats();
@@ -131,7 +131,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("sun")) {
 				if (args.length != 1) {
 					String replaceCommand = plugin.msg.get("msg.22");
-					replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv sun"));
+					replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv sun").getColoredCommand());
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					if (!(cs instanceof Player)) {
@@ -206,7 +206,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("rain")) {
 				if (args.length != 1) {
 					String replaceCommand = plugin.msg.get("msg.22");
-					replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv rain"));
+					replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv rain").getColoredCommand());
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					if (!(cs instanceof Player)) {
@@ -281,7 +281,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("yes")) {
 				if (args.length != 1) {
 					String replaceCommand = plugin.msg.get("msg.22");
-					replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv yes"));
+					replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv yes").getColoredCommand());
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					if (!(cs instanceof Player)) {
@@ -313,7 +313,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("no")) {
 				if (args.length != 1) {
 					String replaceCommand = plugin.msg.get("msg.22");
-					replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv no"));
+					replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv no").getColoredCommand());
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					if (!(cs instanceof Player)) {
@@ -345,7 +345,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("reload")) {
 				if (args.length != 1) {
 					String replaceCommand = plugin.msg.get("msg.22");
-					replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv reload"));
+					replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv reload").getColoredCommand());
 					cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 				} else {
 					if (!cs.hasPermission("WeatherVote.Reload")) {
@@ -537,15 +537,6 @@ public class CommnandWeatherVote implements CommandExecutor {
 						plugin.msg.put("statsText.5", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.1") + ymlFileMessage.getString("StatsText.5")));
 						plugin.msg.put("statsText.6", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.1") + ymlFileMessage.getString("StatsText.6")));
 						plugin.msg.put("statsText.7", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.1") + ymlFileMessage.getString("StatsText.7")));
-						plugin.msg.put("helpText.1", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.1")));
-						plugin.msg.put("helpText.2", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.2")));
-						plugin.msg.put("helpText.3", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.3")));
-						plugin.msg.put("helpText.4", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.4")));
-						plugin.msg.put("helpText.5", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.5")));
-						plugin.msg.put("helpText.6", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.6")));
-						plugin.msg.put("helpText.7", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.7")));
-						plugin.msg.put("helpText.8", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.8")));
-						plugin.msg.put("helpText.9", ChatColor.translateAlternateColorCodes('&', plugin.msg.get("color.2") + ymlFileMessage.getString("HelpText.9")));
 						plugin.msg.put("votingInventoryTitle.1", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("VotingInventoryTitle.1")));
 						plugin.msg.put("votingInventoryTitle.2", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("VotingInventoryTitle.2")));
 						plugin.msg.put("bossBarAPIMessage", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("BossBarAPIMessage")));
@@ -557,19 +548,17 @@ public class CommnandWeatherVote implements CommandExecutor {
 						plugin.msg.put("rmsg.1", ymlFileMessage.getString("RawMessage.1"));
 
 						
-						HelpPageListener.setPluginNametag(plugin.msg.get("[WeatherVote]"));
-						
-						HelpPageListener.addHelpMessage(new HelpMessage(null, plugin.msg.get("helpText.1"), "/wv help (Page)"));
-						HelpPageListener.addHelpMessage(new HelpMessage(null, plugin.msg.get("helpText.2"), "/wv info"));
-						HelpPageListener.addHelpMessage(new HelpMessage(null, plugin.msg.get("helpText.3"), "/wv stats"));
+						CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv help (Page)", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.1"))));
+						CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv info", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.2"))));
+						CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv stats", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.3"))));
 						if (plugin.useVoteGUI) {
-							HelpPageListener.addHelpMessage(new HelpMessage(null, plugin.msg.get("helpText.4"), "/wv"));
+							CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.4"))));
 						}
-						HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Day", plugin.msg.get("helpText.5"), "/wv sun"));
-						HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Night", plugin.msg.get("helpText.6"), "/wv rain"));
-						HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Vote", plugin.msg.get("helpText.7"), "/wv yes"));
-						HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Vote", plugin.msg.get("helpText.8"), "/wv no"));
-						HelpPageListener.addHelpMessage(new HelpMessage("TimeVote.Reload", plugin.msg.get("helpText.9"), "/wv reload"));
+						CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv sun", "WeatherVote.Sun", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.5"))));
+						CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv rain", "WeatherVote.Rain", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.6"))));
+						CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv yes", "WeatherVote.Vote", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.7"))));
+						CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv no", "WeatherVote.Vote", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.8"))));
+						CommandListener.addCommand(new me.F_o_F_1092.WeatherVote.PluginManager.Command("/wv reload", "WeatherVote.Reload", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.9"))));
 						
 						
 						File fileStats = new File("plugins/WeatherVote/Stats.yml");
@@ -600,7 +589,7 @@ public class CommnandWeatherVote implements CommandExecutor {
 				}
 			} else {
 				String replaceCommand = plugin.msg.get("msg.22");
-				replaceCommand = replaceCommand.replace("[COMMAND]", HelpPageListener.getColoredCommand("/wv help (Page)"));
+				replaceCommand = replaceCommand.replace("[COMMAND]", CommandListener.getCommand("/wv help (Page)").getColoredCommand());
 				cs.sendMessage(plugin.msg.get("[WeatherVote]") + replaceCommand); 
 			}
 		}
