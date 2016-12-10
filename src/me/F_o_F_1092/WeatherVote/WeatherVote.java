@@ -111,14 +111,14 @@ public class WeatherVote {
 				objective.setDisplayName(plugin.msg.get("[WeatherVote]") + plugin.msg.get("text.1"));
 			} catch (Exception e1) {
 				objective.setDisplayName("§f[§9Weather§bVote§f] SUNNY");
-				System.out.println("\u001B[31m[WeatherVote] ERROR: 001 | The scoreboard name caused a problem. (Message: text.1) [" + e1.getMessage() +"]\u001B[0m");
+				System.out.println("\u001B[31m[WeatherVote] The scoreboard name caused a problem. (Message: text.1) [" + e1.getMessage() +"]\u001B[0m");
 			}
 		} else {
 			try {
 				objective.setDisplayName(plugin.msg.get("[WeatherVote]") + plugin.msg.get("text.2"));
 			} catch (Exception e1) {
 				objective.setDisplayName("§f[§9Weather§bVote§f] RAINY");
-				System.out.println("\u001B[31m[WeatherVote] ERROR: 002 | The scoreboard name caused a problem. (Message: text.2) [" + e1.getMessage() +"]\u001B[0m");
+				System.out.println("\u001B[31m[WeatherVote] The scoreboard name caused a problem. (Message: text.2) [" + e1.getMessage() +"]\u001B[0m");
 			}
 		}
 
@@ -129,7 +129,7 @@ public class WeatherVote {
 		try {
 			Bukkit.getPlayer(player).getScoreboard().getObjective("WeatherVote").unregister();
 		} catch (Exception e1) {
-			System.out.println("\u001B[31m[WeatherVote] ERROR: 008 | The scoreboard could not be removed from the Player. [" + e1.getMessage() +"]\u001B[0m");
+			System.out.println("\u001B[31m[WeatherVote] The scoreboard could not be removed from the Player. [" + e1.getMessage() +"]\u001B[0m");
 		}
 	}
 
@@ -149,7 +149,7 @@ public class WeatherVote {
 				scoreYes = objective.getScore(plugin.msg.get("text.3"));
 			} catch (Exception e1) {
 				scoreYes = objective.getScore(plugin.msg.get("text.2") + "YES");
-				System.out.println("\u001B[31m[WeatherVote] ERROR: 003 | The scoreboard text for YES caused a problem. (Message: text.3) [" + e1.getMessage() +"]\u001B[0m");
+				System.out.println("\u001B[31m[WeatherVote] The scoreboard text for YES caused a problem. (Message: text.3) [" + e1.getMessage() +"]\u001B[0m");
 			}
 			scoreYes.setScore(getYesVotes());
 			Score scoreNo;
@@ -157,7 +157,7 @@ public class WeatherVote {
 				scoreNo = objective.getScore(plugin.msg.get("text.4"));
 			} catch (Exception e1) {
 				scoreNo = objective.getScore(plugin.msg.get("text.2") + "NO");
-				System.out.println("\u001B[31m[WeatherVote] ERROR: 004 | The scoreboard text for NO caused a problem. (Message: text.4) [" + e1.getMessage() +"]\u001B[0m");
+				System.out.println("\u001B[31m[WeatherVote] The scoreboard text for NO caused a problem. (Message: text.4) [" + e1.getMessage() +"]\u001B[0m");
 			}
 			scoreNo.setScore(getNoVotes());
 		}

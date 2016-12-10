@@ -6,7 +6,7 @@ import me.F_o_F_1092.WeatherVote.Main;
 
 public class Command {
 	
-	private static Main plugin = (Main)Bukkit.getPluginManager().getPlugin("TimeVote");
+	private static Main plugin = (Main)Bukkit.getPluginManager().getPlugin("WeatherVote");
 	
 	String permission;
 	String commandString;

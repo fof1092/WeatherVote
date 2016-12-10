@@ -11,7 +11,7 @@ import me.F_o_F_1092.WeatherVote.Main;
 
 public class HelpPageListener {
 
-	private static Main plugin = (Main)Bukkit.getPluginManager().getPlugin("TimeVote");
+	private static Main plugin = (Main)Bukkit.getPluginManager().getPlugin("WeatherVote");
 	
 	static String pluginNametag;
 	static String helpCommand = "/WeatherVote help";

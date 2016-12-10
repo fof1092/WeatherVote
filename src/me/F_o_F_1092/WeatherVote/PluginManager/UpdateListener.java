@@ -23,8 +23,8 @@ import me.F_o_F_1092.WeatherVote.Main;
 public class UpdateListener {
 
 	public static boolean updateAvailable = false;
-	public static double updateDouble = 1.14;
-	public static String updateString = "1.1.4";
+	public static double updateDouble = 1.17;
+	public static String updateString = "1.1.7";
 	static String versionURL = "https://fof1092.de/Plugins/WV/version.txt";
 	static String tag = "[WeatherVote]";
 	

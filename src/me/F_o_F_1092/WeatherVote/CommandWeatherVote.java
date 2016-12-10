@@ -386,6 +386,8 @@ public class CommandWeatherVote implements CommandExecutor {
 						plugin.votes.clear();
 						plugin.disabledWorlds.clear();
 
+						CommandListener.clearCommands();
+						
 						File fileConfig = new File("plugins/WeatherVote/Config.yml");
 						FileConfiguration ymlFileConfig = YamlConfiguration.loadConfiguration(fileConfig);
 
@@ -410,7 +412,7 @@ public class CommandWeatherVote implements CommandExecutor {
 								ymlFileConfig.set("VotingInventoryMessages", true);
 								ymlFileConfig.save(fileConfig);
 							} catch (IOException e1) {
-								System.out.println("\u001B[31m[WeatherVote] ERROR: 009 | Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
+								System.out.println("\u001B[31m[WeatherVote] Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
 							}
 
 							plugin.disabledWorlds.clear();
@@ -496,7 +498,7 @@ public class CommandWeatherVote implements CommandExecutor {
 								ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
 								ymlFileMessage.save(fileMessages);
 							} catch (IOException e1) {
-								System.out.println("\u001B[31m[WeatherVote] ERROR: 012 | Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
+								System.out.println("\u001B[31m[WeatherVote] Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
 							}
 						}
 
@@ -580,7 +582,7 @@ public class CommandWeatherVote implements CommandExecutor {
 								ymlFileStats.set("MoneySpent", 0.00);
 								ymlFileStats.save(fileStats);
 							} catch (IOException e1) {
-								System.out.println("\u001B[31m[WeatherVote] ERROR: 015 | Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
+								System.out.println("\u001B[31m[WeatherVote] Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
 							}
 						}
 

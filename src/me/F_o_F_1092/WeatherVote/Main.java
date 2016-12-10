@@ -89,7 +89,7 @@ public class Main extends JavaPlugin {
 				ymlFileConfig.set("VotingInventoryMessages", true);
 				ymlFileConfig.save(fileConfig);
 			} catch (IOException e1) {
-				System.out.println("\u001B[31m[WeatherVote] ERROR: 009 | Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
+				System.out.println("\u001B[31m[WeatherVote] Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
 			}
 
 			disabledWorlds.clear();
@@ -109,7 +109,7 @@ public class Main extends JavaPlugin {
 					ymlFileConfig.set("CheckForHiddenPlayers", false);
 					ymlFileConfig.save(fileConfig);
 				} catch (IOException e1) {
-					System.out.println("\u001B[31m[WeatherVote] ERROR: 010 | Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
+					System.out.println("\u001B[31m[WeatherVote] Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
 				}
 			} else if (version < UpdateListener.getUpdateDoubleVersion()) {
 				try {
@@ -136,7 +136,7 @@ public class Main extends JavaPlugin {
 					}
 					ymlFileConfig.save(fileConfig);
 				} catch (IOException e1) {
-					System.out.println("\u001B[31m[WeatherVote] ERROR: 011 | Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
+					System.out.println("\u001B[31m[WeatherVote] Can't create the Config.yml. [" + e1.getMessage() +"]\u001B[0m");
 				}
 			}
 		}
@@ -235,7 +235,7 @@ public class Main extends JavaPlugin {
 				ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
 				ymlFileMessage.save(fileMessages);
 			} catch (IOException e1) {
-				System.out.println("\u001B[31m[WeatherVote] ERROR: 012 | Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
+				System.out.println("\u001B[31m[WeatherVote] Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
 			}
 		} else {
 			double version = ymlFileMessage.getDouble("Version");
@@ -293,7 +293,7 @@ public class Main extends JavaPlugin {
 					ymlFileMessage.set("RawMessage.1", "[\"\",{\"text\":\"There is a new voting for \",\"color\":\"blue\"},{\"text\":\"[WEATHER]\",\"color\":\"aqua\"},{\"text\":\" weather, vote with \",\"color\":\"blue\"},{\"text\":\"/wv yes\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv yes\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv yes\",\"color\":\"aqua\"}]}}},{\"text\":\" or \",\"color\":\"blue\"},{\"text\":\"/wv no\",\"color\":\"aqua\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/wv no\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"\",\"extra\":[{\"text\":\"/wv no\",\"color\":\"aqua\"}]}}},{\"text\":\".\",\"color\":\"blue\"}]");
 					ymlFileMessage.save(fileMessages);
 				} catch (IOException e1) {
-					System.out.println("\u001B[31m[WeatherVote] ERROR: 013 | Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
+					System.out.println("\u001B[31m[WeatherVote] Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
 				}
 			} else if (version < UpdateListener.getUpdateDoubleVersion()) {
 				try {
@@ -356,7 +356,7 @@ public class Main extends JavaPlugin {
 					}
 					ymlFileMessage.save(fileMessages);
 				} catch (IOException e1) {
-					System.out.println("\u001B[31m[WeatherVote] ERROR: 014 | Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
+					System.out.println("\u001B[31m[WeatherVote] Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
 				}
 			}
 		}
@@ -447,7 +447,7 @@ public class Main extends JavaPlugin {
 				ymlFileStats.set("MoneySpent", 0.00);
 				ymlFileStats.save(fileStats);
 			} catch (IOException e1) {
-				System.out.println("\u001B[31m[WeatherVote] ERROR: 015 | Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
+				System.out.println("\u001B[31m[WeatherVote] Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
 			}
 		} else {
 			double version = ymlFileStats.getDouble("Version");
@@ -459,7 +459,7 @@ public class Main extends JavaPlugin {
 					}
 					ymlFileStats.save(fileStats);
 				} catch (IOException e1) {
-					System.out.println("\u001B[31m[WeatherVote] ERROR: 016 | Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
+					System.out.println("\u001B[31m[WeatherVote] Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
 				}
 			}
 		}
