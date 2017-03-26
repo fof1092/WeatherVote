@@ -43,9 +43,22 @@ public class Main extends JavaPlugin {
 	boolean vault = false;
 	boolean updateAvailable = false;
 
+	static Main plugin;
+	
+	public static Main getPlugin() {
+		return plugin;
+	}
+	
+	@Override
 	public void onEnable() {
 		System.out.println("[WeatherVote] a Plugin by F_o_F_1092");
-
+	
+		plugin = this;
+		
+		UpdateListener.initializeUpdateListener(1.2, "1.2", "https://fof1092.de/Plugins/WV/version-MC1.8-1.11.txt", "[WeatherVote]");
+		UpdateListener.checkForUpdate();
+		
+		
 		if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
 			vault = true;
 		}
@@ -166,6 +179,44 @@ public class Main extends JavaPlugin {
 		disabledWorlds.addAll(ymlFileConfig.getStringList("DisabledWorld"));
 		votingInventoryMessages = ymlFileConfig.getBoolean("VotingInventoryMessages");
 
+		
+		File fileStats = new File("plugins/WeatherVote/Stats.yml");
+		FileConfiguration ymlFileStats = YamlConfiguration.loadConfiguration(fileStats);
+
+		if(!fileStats.exists()){
+			try {
+				ymlFileStats.save(fileStats);
+				ymlFileStats.set("Version", UpdateListener.getUpdateDoubleVersion());
+				ymlFileStats.set("Date", new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+				ymlFileStats.set("Sunny.Yes", 0);
+				ymlFileStats.set("Sunny.No", 0);
+				ymlFileStats.set("Sunny.Won", 0);
+				ymlFileStats.set("Sunny.Lost", 0);
+				ymlFileStats.set("Rainy.Yes", 0);
+				ymlFileStats.set("Rainy.No", 0);
+				ymlFileStats.set("Rainy.Won", 0);
+				ymlFileStats.set("Rainy.Lost", 0);
+				ymlFileStats.set("MoneySpent", 0.00);
+				ymlFileStats.save(fileStats);
+			} catch (IOException e1) {
+				System.out.println("\u001B[31m[WeatherVote] Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
+			}
+		} else {
+			double version = ymlFileStats.getDouble("Version");
+			if (version < UpdateListener.getUpdateDoubleVersion()) {
+				try {
+					ymlFileStats.set("Version", UpdateListener.getUpdateDoubleVersion());
+					if (version < 0.4) {
+						ymlFileStats.set("MoneySpent", 0.00);
+					}
+					ymlFileStats.save(fileStats);
+				} catch (IOException e1) {
+					System.out.println("\u001B[31m[WeatherVote] Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
+				}
+			}
+		}
+
+		
 		File fileMessages = new File("plugins/WeatherVote/Messages.yml");
 		FileConfiguration ymlFileMessage = YamlConfiguration.loadConfiguration(fileMessages);
 
@@ -199,6 +250,8 @@ public class Main extends JavaPlugin {
 				ymlFileMessage.set("Message.21", "You'r voting-inventory has been closed.");
 				ymlFileMessage.set("Message.22", "Try [COMMAND]");
 				ymlFileMessage.set("Message.23", "You changed the weather to &b[WEATHER]&9.");
+				ymlFileMessage.set("Message.24", "The voting has stopped.");
+				ymlFileMessage.set("Message.25", "You stopped the voting.");
 				ymlFileMessage.set("Text.1", "SUNNY");
 				ymlFileMessage.set("Text.2", "RAINY");
 				ymlFileMessage.set("Text.3", "YES");
@@ -224,6 +277,7 @@ public class Main extends JavaPlugin {
 				ymlFileMessage.set("HelpText.7", "This command allows you to vote for yes or no.");
 				ymlFileMessage.set("HelpText.8", "' '");
 				ymlFileMessage.set("HelpText.9", "This command is reloading the Config.yml and Messages.yml file.");
+				ymlFileMessage.set("HelpText.10", "This command stopps a voting.");
 				ymlFileMessage.set("VotingInventoryTitle.1", "&f[&9W&bV&f] &bSunny&f/&bRainy");
 				ymlFileMessage.set("VotingInventoryTitle.2", "&f[&9W&bV&f] &b[WEATHER]&9");
 				ymlFileMessage.set("BossBarAPIMessage", "&f[&9W&bV&f] &9Voting for &b[WEATHER]&9 weather (&b/wv yes&9 or &b/wv no&9)");
@@ -257,6 +311,8 @@ public class Main extends JavaPlugin {
 					ymlFileMessage.set("Message.21", "You'r voting-inventory has been closed.");
 					ymlFileMessage.set("Message.22", "Try [COMMAND]");
 					ymlFileMessage.set("Message.23", "You changed the weather to &b[WEATHER]&9.");
+					ymlFileMessage.set("Message.24", "The voting has stopped.");
+					ymlFileMessage.set("Message.25", "You stopped the voting.");
 					ymlFileMessage.set("Text.1", "SUNNY");
 					ymlFileMessage.set("Text.2", "RAINY");
 					ymlFileMessage.set("Text.3", "YES");
@@ -282,6 +338,7 @@ public class Main extends JavaPlugin {
 					ymlFileMessage.set("HelpText.7", "This command allows you to vote for yes or no.");
 					ymlFileMessage.set("HelpText.8", "' '");
 					ymlFileMessage.set("HelpText.9", "This command is reloading the Config.yml and Messages.yml file.");
+					ymlFileMessage.set("HelpText.10", "This command stopps a voting.");
 					ymlFileMessage.set("VotingInventoryTitle.1", "&f[&9W&bV&f] &bSunny&f/&bRainy");
 					ymlFileMessage.set("VotingInventoryTitle.2", "&f[&9W&bV&f] &b[WEATHER]&9");
 					ymlFileMessage.set("BossBarAPIMessage", "&f[&9W&bV&f] &9Voting for &b[WEATHER]&9 weather (&b/wv yes&9 or &b/wv no&9)");
@@ -354,6 +411,11 @@ public class Main extends JavaPlugin {
 					    ymlFileMessage.set("HelpTextGui.3", "&b[&9Last page&b]");
 					    ymlFileMessage.set("HelpTextGui.4", "&7&oPage [PAGE]. &7Click on the arrows for the next page.");
 					}
+					if (version < 1.2) {
+						ymlFileMessage.set("Message.24", "The voting has stopped.");
+						ymlFileMessage.set("Message.25", "You stopped the voting.");
+						ymlFileMessage.set("HelpText.10", "This command stopps a voting.");
+					}
 					ymlFileMessage.save(fileMessages);
 				} catch (IOException e1) {
 					System.out.println("\u001B[31m[WeatherVote] Can't create the Messages.yml. [" + e1.getMessage() +"]\u001B[0m");
@@ -387,6 +449,8 @@ public class Main extends JavaPlugin {
 		msg.put("msg.21", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.21")));
 		msg.put("msg.22", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.22")));
 		msg.put("msg.23", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.23")));
+		msg.put("msg.24", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.24")));
+		msg.put("msg.25", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("Message.25")));
 		msg.put("text.1", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.1")));
 		msg.put("text.2", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.2")));
 		msg.put("text.3", ChatColor.translateAlternateColorCodes('&', msg.get("color.2") + ymlFileMessage.getString("Text.3")));
@@ -402,6 +466,7 @@ public class Main extends JavaPlugin {
 		msg.put("statsText.5", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.5")));
 		msg.put("statsText.6", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.6")));
 		msg.put("statsText.7", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.7")));
+		msg.put("statsText.8", ChatColor.translateAlternateColorCodes('&', msg.get("color.1") + ymlFileMessage.getString("StatsText.8")));
 		msg.put("votingInventoryTitle.1", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("VotingInventoryTitle.1")));
 		msg.put("votingInventoryTitle.2", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("VotingInventoryTitle.2")));
 		msg.put("bossBarAPIMessage", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("BossBarAPIMessage")));
@@ -413,7 +478,7 @@ public class Main extends JavaPlugin {
 		msg.put("rmsg.1", ymlFileMessage.getString("RawMessage.1"));
 
 		
-		HelpPageListener.setPluginNametag(msg.get("[WeatherVote]"));
+		HelpPageListener.initializeHelpPageListener("/WeatherVote help", plugin.msg.get("[WeatherVote]"));
 		
 		CommandListener.addCommand(new Command("/wv help (Page)", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.1"))));
 		CommandListener.addCommand(new Command("/wv info", null, ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.2"))));
@@ -425,48 +490,12 @@ public class Main extends JavaPlugin {
 		CommandListener.addCommand(new Command("/wv rain", "WeatherVote.Rain", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.6"))));
 		CommandListener.addCommand(new Command("/wv yes", "WeatherVote.Vote", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.7"))));
 		CommandListener.addCommand(new Command("/wv no", "WeatherVote.Vote", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.8"))));
+		CommandListener.addCommand(new Command("/wv stopVoting [World]", "WeatherVote.StopVoting", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.10"))));
 		CommandListener.addCommand(new Command("/wv reload", "WeatherVote.Reload",ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.9"))));
 		
-		
-		File fileStats = new File("plugins/WeatherVote/Stats.yml");
-		FileConfiguration ymlFileStats = YamlConfiguration.loadConfiguration(fileStats);
-
-		if(!fileStats.exists()){
-			try {
-				ymlFileStats.save(fileStats);
-				ymlFileStats.set("Version", UpdateListener.getUpdateDoubleVersion());
-				ymlFileStats.set("Date", new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-				ymlFileStats.set("Sunny.Yes", 0);
-				ymlFileStats.set("Sunny.No", 0);
-				ymlFileStats.set("Sunny.Won", 0);
-				ymlFileStats.set("Sunny.Lost", 0);
-				ymlFileStats.set("Rainy.Yes", 0);
-				ymlFileStats.set("Rainy.No", 0);
-				ymlFileStats.set("Rainy.Won", 0);
-				ymlFileStats.set("Rainy.Lost", 0);
-				ymlFileStats.set("MoneySpent", 0.00);
-				ymlFileStats.save(fileStats);
-			} catch (IOException e1) {
-				System.out.println("\u001B[31m[WeatherVote] Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
-			}
-		} else {
-			double version = ymlFileStats.getDouble("Version");
-			if (version < UpdateListener.getUpdateDoubleVersion()) {
-				try {
-					ymlFileStats.set("Version", UpdateListener.getUpdateDoubleVersion());
-					if (version < 0.4) {
-						ymlFileStats.set("MoneySpent", 0.00);
-					}
-					ymlFileStats.save(fileStats);
-				} catch (IOException e1) {
-					System.out.println("\u001B[31m[WeatherVote] Can't create the Stats.yml. [" + e1.getMessage() +"]\u001B[0m");
-				}
-			}
-		}
-
-		UpdateListener.checkForUpdate(this);
 	}
 
+	@Override
 	public void onDisable() {
 		System.out.println("[WeatherVote] a Plugin by F_o_F_1092");
 		for (World w : Bukkit.getWorlds()) {

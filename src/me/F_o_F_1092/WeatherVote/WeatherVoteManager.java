@@ -12,7 +12,7 @@ import net.milkbowl.vault.economy.Economy;
 
 public class WeatherVoteManager {
 
-	private static Main plugin = (Main)Bukkit.getPluginManager().getPlugin("WeatherVote");
+	private static Main plugin = Main.getPlugin();
 
 	public static boolean isVotingAtWorld(String worldName) {
 		return plugin.votes.containsKey(worldName);
