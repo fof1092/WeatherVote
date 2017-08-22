@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import me.F_o_F_1092.WeatherVote.PluginManager.CommandListener;
-import me.F_o_F_1092.WeatherVote.PluginManager.HelpPageListener;
-import me.F_o_F_1092.WeatherVote.PluginManager.TabCompleteListener;
+import me.F_o_F_1092.WeatherVote.PluginManager.Spigot.HelpPageListener;
+import me.F_o_F_1092.WeatherVote.PluginManager.Spigot.TabCompleteListener;
 
 public class CommandWeatherVoteTabCompleter implements TabCompleter {
 
