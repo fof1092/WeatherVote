@@ -20,8 +20,8 @@ public class EventListener implements Listener {
 		final Player p = e.getPlayer();
 
 		if (UpdateListener.isAnewUpdateAvailable()) {
-			if (p.hasPermission("TimeVote.UpdateMessage")) {
-				p.sendMessage(Options.msg.get("[TimeVote]") + Options.msg.get("msg.16"));
+			if (p.hasPermission("WeatherVote.UpdateMessage")) {
+				p.sendMessage(Options.msg.get("[WeatherVote]") + Options.msg.get("msg.16"));
 			}
 		}
 
@@ -29,7 +29,6 @@ public class EventListener implements Listener {
 			WeatherVoteListener.getVoteing(p.getWorld().getName()).switchWorld(p, true);
 		}
 	}
-
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {

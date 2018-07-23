@@ -18,8 +18,8 @@ import me.F_o_F_1092.WeatherVote.PluginManager.CommandListener;
 import me.F_o_F_1092.WeatherVote.PluginManager.HelpPageListener;
 import me.F_o_F_1092.WeatherVote.PluginManager.ServerLog;
 import me.F_o_F_1092.WeatherVote.PluginManager.VersionManager;
+import me.F_o_F_1092.WeatherVote.PluginManager.VersionManager.BukkitVersion;
 import me.F_o_F_1092.WeatherVote.PluginManager.VersionManager.ServerType;
-import me.F_o_F_1092.WeatherVote.PluginManager.VersionManager.Version;
 import me.F_o_F_1092.WeatherVote.PluginManager.Spigot.UpdateListener;
 import me.F_o_F_1092.WeatherVote.VotingGUI.VotingGUIListener;
 
@@ -38,14 +38,10 @@ public class Main extends JavaPlugin {
 		plugin = this;
 		
 		ServerLog.setPluginTag("§f[§9Weather§bVote§f]§9");
-		UpdateListener.initializeUpdateListener(1.3, "1.3", 7642);
+		UpdateListener.initializeUpdateListener(1.41, "1.4.1", 7642);
 		UpdateListener.checkForUpdate();
 		
-		
-		if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
-			Options.vault = true;
-		}
-		
+		setup();
 		
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new EventListener(), this);
@@ -53,6 +49,23 @@ public class Main extends JavaPlugin {
 		this.getCommand("WeatherVote").setExecutor(new CommandWeatherVote());
 		this.getCommand("WeatherVote").setTabCompleter(new CommandWeatherVoteTabCompleter());
 
+		
+	}
+
+	@Override
+	public void onDisable() {
+		disable();
+		
+		System.out.println("[WeatherVote] a Plugin by F_o_F_1092");
+	}
+
+	public static void setup() {
+		VersionManager.setVersionManager(Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3], ServerType.BUKKIT, false);
+		
+		if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
+			Options.vault = true;
+		}
+		
 		File fileConfig = new File("plugins/WeatherVote/Config.yml");
 		FileConfiguration ymlFileConfig = YamlConfiguration.loadConfiguration(fileConfig);
 
@@ -64,7 +77,7 @@ public class Main extends JavaPlugin {
 				ymlFileConfig.save(fileConfig);
 				ymlFileConfig.set("Version", UpdateListener.getUpdateDoubleVersion());
 				ymlFileConfig.set("GameVersion.SetOwn", false);
-				ymlFileConfig.set("GameVersion.Version", "1.12");
+				ymlFileConfig.set("GameVersion.Version", "v1_13_R1");
 				ymlFileConfig.set("ColoredConsoleText", true);
 				ymlFileConfig.set("VotingTime", 35);
 				ymlFileConfig.set("RemindingTime", 25);
@@ -114,9 +127,11 @@ public class Main extends JavaPlugin {
 							ymlFileConfig.set("UseTitle", ymlFileConfig.getBoolean("UseTitleAPI"));
 							ymlFileConfig.set("UseTitleAPI", null);
 						}
-						ymlFileConfig.set("GameVersion.SetOwn", false);
-						ymlFileConfig.set("GameVersion.Version", "1.12");
 						ymlFileConfig.set("ColoredConsoleText", true);
+					}
+					if (version < 1.4) {
+						ymlFileConfig.set("GameVersion.SetOwn", false);
+						ymlFileConfig.set("GameVersion.Version", "v1_13_R1");
 					}
 					ymlFileConfig.save(fileConfig);
 				} catch (IOException e) {
@@ -128,11 +143,10 @@ public class Main extends JavaPlugin {
 		ServerLog.setUseColoredColores(ymlFileConfig.getBoolean("ColoredConsoleText"));
 		
 		if (!ymlFileConfig.getBoolean("GameVersion.SetOwn")) {
-			VersionManager.setVersionManager(Bukkit.getVersion(), ServerType.BUKKIT, false);
-			ServerLog.log("ServerType:§b " + VersionManager.getSetverTypeString() + "§9, Version:§b " + VersionManager.getVersionSring());
+			ServerLog.log("ServerType:§b " + VersionManager.getSetverTypeString() + "§9, Version:§b " + VersionManager.getBukkitVersion());
 		} else {
 			VersionManager.setVersionManager(ymlFileConfig.getString("GameVersion.Version"), ServerType.BUKKIT, true);
-			ServerLog.log("ServerType:§b " + VersionManager.getSetverTypeString() + "§9, Version:§b " + VersionManager.getVersionSring() + "§9 | §b(Self configurated)");
+			ServerLog.log("ServerType:§b " + VersionManager.getSetverTypeString() + "§9, Version:§b " + VersionManager.getBukkitVersion() + "§9 | §b(Self configurated)");
 		}
 		
 		Options.votingTime = ymlFileConfig.getLong("VotingTime");
@@ -142,7 +156,7 @@ public class Main extends JavaPlugin {
 		Options.useVoteGUI = ymlFileConfig.getBoolean("UseVoteGUI");
 		
 		if (ymlFileConfig.getBoolean("UseBossBar")) {
-			if (VersionManager.getVersion() == Version.MC_V1_7 || VersionManager.getVersion() == Version.MC_V1_8) {
+			if (VersionManager.getBukkitVersion() == BukkitVersion.v1_7_R1 || VersionManager.getBukkitVersion() == BukkitVersion.v1_7_R2 || VersionManager.getBukkitVersion() == BukkitVersion.v1_7_R4 || VersionManager.getBukkitVersion() == BukkitVersion.v1_7_R3 || VersionManager.getBukkitVersion() == BukkitVersion.v1_8_R1 || VersionManager.getBukkitVersion() == BukkitVersion.v1_8_R2 || VersionManager.getBukkitVersion() == BukkitVersion.v1_8_R3) {
 				if (Bukkit.getPluginManager().getPlugin("BossBarAPI") != null) {
 					Options.useBossBar = true;
 				}
@@ -152,7 +166,7 @@ public class Main extends JavaPlugin {
 		}
 		
 		if (ymlFileConfig.getBoolean("UseTitle")) {
-			if (VersionManager.getVersion() == Version.MC_V1_7 || VersionManager.getVersion() == Version.MC_V1_8) {
+			if (VersionManager.getBukkitVersion() == BukkitVersion.v1_7_R1 || VersionManager.getBukkitVersion() == BukkitVersion.v1_7_R2 || VersionManager.getBukkitVersion() == BukkitVersion.v1_7_R4 || VersionManager.getBukkitVersion() == BukkitVersion.v1_7_R3 || VersionManager.getBukkitVersion() == BukkitVersion.v1_8_R1 || VersionManager.getBukkitVersion() == BukkitVersion.v1_8_R2 || VersionManager.getBukkitVersion() == BukkitVersion.v1_8_R3) {
 				if (Bukkit.getPluginManager().getPlugin("TitleAPI") != null) {
 					Options.useTitle = true;
 				}
@@ -411,21 +425,23 @@ public class Main extends JavaPlugin {
 		CommandListener.addCommand(new Command("/wv no", "WeatherVote.Vote", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.8"))));
 		CommandListener.addCommand(new Command("/wv stopVoting [World]", "WeatherVote.StopVoting", ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.10"))));
 		CommandListener.addCommand(new Command("/wv reload", "WeatherVote.Reload",ChatColor.translateAlternateColorCodes('&', ymlFileMessage.getString("HelpText.9"))));
-		
 	}
-
-	@Override
-	public void onDisable() {
-		System.out.println("[WeatherVote] a Plugin by F_o_F_1092");
+	
+	public static void disable() {
 		for (World w : Bukkit.getWorlds()) {
 			if (Options.useVoteGUI) {
 				VotingGUIListener.closeVotingGUIsAtWorld(w.getName());
 			}
 
 			if (WeatherVoteListener.isVoting(w.getName())) {
-				WeatherVoteListener.getVoteing(w.getName()).stopVoting(false);
+				WeatherVoteListener.getVoteing(w.getName()).stopVoting(true);
 			}
 		}
-	}
+		
+		WeatherVoteListener.weatherVotes.clear();
+		Options.disabledWorlds.clear();
 
+		CommandListener.clearCommands();
+	}
+	
 }

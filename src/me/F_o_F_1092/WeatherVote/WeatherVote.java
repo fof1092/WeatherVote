@@ -124,14 +124,22 @@ public class WeatherVote {
 		List<Player> players = new ArrayList<Player>();
 		
 		for (Player p : Bukkit.getWorld(this.worldName).getPlayers()) {
-			if (Bukkit.getPlayer(p.getName()) != null && Bukkit.getPlayer(p.getName()).isOnline() && !p.hasMetadata("NPC")) {
-				if (!Options.showVoteOnlyToPlayersWithPermission || Options.showVoteOnlyToPlayersWithPermission && (p.hasPermission("WeatherVote.Vote") || p.hasPermission("WeatherVote.Rain") || p.hasPermission("WeatherVote.Sun"))) {
-					players.add(p);
-				}
+			if (checkPlayerAtWorldPermission(p)) {
+				players.add(p);
 			}
 		}
 		
 		return players;
+	}
+	
+	boolean checkPlayerAtWorldPermission(Player p) {
+		if (Bukkit.getPlayer(p.getName()) != null && Bukkit.getPlayer(p.getName()).isOnline() && !p.hasMetadata("NPC")) {
+			if (!Options.showVoteOnlyToPlayersWithPermission || Options.showVoteOnlyToPlayersWithPermission && (p.hasPermission("WeatherVote.Vote") || p.hasPermission("WeatherVote.Rain") || p.hasPermission("WeatherVote.Sun"))) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	
@@ -204,7 +212,7 @@ public class WeatherVote {
 	 */
 	
 	void switchWorld(Player p, boolean votingWorld) {
-		if (getAllPlayersAtWorld().contains(p)) {
+		if (checkPlayerAtWorldPermission(p)) {
 			if (getTimerType() != TimerType.TIMEOUT) {
 				if (votingWorld) {
 					
@@ -212,27 +220,27 @@ public class WeatherVote {
 						String votingMessage = Options.msg.get("rmsg.1");
 						
 						if (getWeather() == Weather.SUN) {
-							votingMessage = votingMessage.replace("[TIME]", Options.msg.get("text.1"));
+							votingMessage = votingMessage.replace("[WEATHER]", Options.msg.get("text.1"));
 						} else {
-							votingMessage = votingMessage.replace("[TIME]", Options.msg.get("text.2"));
+							votingMessage = votingMessage.replace("[WEATHER]", Options.msg.get("text.2"));
 						}
 						
 						votingMessage = votingMessage.replace("[PLAYER]", this.votePlayers.get(0).getPlayer().getName());
-						votingMessage = votingMessage.replace("[\"\",", "[\"\",{\"text\":\"" + Options.msg.get("[TimeVote]") + "\"},");
+						votingMessage = votingMessage.replace("[\"\",", "[\"\",{\"text\":\"" + Options.msg.get("[WeatherVote]") + "\"},");
 						
 						sendJSONMessage(votingMessage);
 					} else {
 						String votingMessage = Options.msg.get("msg.3");
 						
 						if (getWeather() == Weather.SUN) {
-							votingMessage = votingMessage.replace("[TIME]", Options.msg.get("text.1"));
+							votingMessage = votingMessage.replace("[WEATHER]", Options.msg.get("text.1"));
 						} else {
-							votingMessage = votingMessage.replace("[TIME]", Options.msg.get("text.2"));
+							votingMessage = votingMessage.replace("[WEATHER]", Options.msg.get("text.2"));
 						}
 						
 						votingMessage = votingMessage.replace("[PLAYER]", this.votePlayers.get(0).getPlayer().getName());
 						
-						sendMessage(Options.msg.get("[TimeVote]") + votingMessage);
+						sendMessage(Options.msg.get("[WeatherVote]") + votingMessage);
 					}
 					
 					
@@ -545,9 +553,9 @@ public class WeatherVote {
 	 * Scoreboard Managing
 	 */
 	
-	void registerScoreboard(Player p) {
+	protected void registerScoreboard(Player p) {
 		Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
-		Objective objective = sb.registerNewObjective("WeatherVote", "dummy");
+		Objective objective = sb.registerNewObjective("WeatherVote", "dummy", "");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		
 		if (getWeather() == Weather.SUN) {
@@ -595,7 +603,7 @@ public class WeatherVote {
 		}
 	}
 	
-	void updateScore(Player p) {
+	protected void updateScore(Player p) {
 		if (p.getScoreboard().getObjective("WeatherVote") != null) {
 			Objective objective = p.getScoreboard().getObjective("WeatherVote");
 			Score scoreYes;
