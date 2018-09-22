@@ -88,11 +88,11 @@ public class EventListener implements Listener {
 					}
 				} else {
 					if (e.getSlot() >= 1 && e.getSlot() <= 3) {
-						p.chat("/WeatherVote sun");
+						p.chat("/WeatherVote yes");
 						
 						p.closeInventory();
 					} else if (e.getSlot() >= 5 && e.getSlot() <= 7) {
-						p.chat("/WeatherVote rain");
+						p.chat("/WeatherVote no");
 						
 						p.closeInventory();
 					}

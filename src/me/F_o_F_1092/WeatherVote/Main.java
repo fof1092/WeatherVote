@@ -38,7 +38,7 @@ public class Main extends JavaPlugin {
 		plugin = this;
 		
 		ServerLog.setPluginTag("§f[§9Weather§bVote§f]§9");
-		UpdateListener.initializeUpdateListener(1.41, "1.4.1", 7642);
+		UpdateListener.initializeUpdateListener(1.42, "1.4.2", 7642);
 		UpdateListener.checkForUpdate();
 		
 		setup();
@@ -70,6 +70,7 @@ public class Main extends JavaPlugin {
 		FileConfiguration ymlFileConfig = YamlConfiguration.loadConfiguration(fileConfig);
 
 		if(!fileConfig.exists()) {
+			
 			Options.disabledWorlds.add("world_nether");
 			Options.disabledWorlds.add("world_the_end");
 
@@ -77,7 +78,7 @@ public class Main extends JavaPlugin {
 				ymlFileConfig.save(fileConfig);
 				ymlFileConfig.set("Version", UpdateListener.getUpdateDoubleVersion());
 				ymlFileConfig.set("GameVersion.SetOwn", false);
-				ymlFileConfig.set("GameVersion.Version", "v1_13_R1");
+				ymlFileConfig.set("GameVersion.Version", "v1_13_R2");
 				ymlFileConfig.set("ColoredConsoleText", true);
 				ymlFileConfig.set("VotingTime", 35);
 				ymlFileConfig.set("RemindingTime", 25);
@@ -131,7 +132,7 @@ public class Main extends JavaPlugin {
 					}
 					if (version < 1.4) {
 						ymlFileConfig.set("GameVersion.SetOwn", false);
-						ymlFileConfig.set("GameVersion.Version", "v1_13_R1");
+						ymlFileConfig.set("GameVersion.Version", "v1_13_R2");
 					}
 					ymlFileConfig.save(fileConfig);
 				} catch (IOException e) {
